@@ -206,6 +206,52 @@ table.rt { border-collapse: collapse; font-size: 0.9rem; } table.rt td { border:
 .anim-card > .t, .anim-card > .new { z-index: 2; position: relative; }
 .rv.legend { animation: flip 0.5s both, pulse 1.4s ease-in-out infinite 0.6s; }
 @keyframes pulse { 50% { box-shadow: 0 0 40px #ffb547; } }
+
+/* ===== 모바일 (폰 가로 화면) — 사용자 요청 11-11 ===== */
+.touch { display: block !important; position: absolute; right: max(10px, env(safe-area-inset-right)); bottom: max(10px, env(safe-area-inset-bottom)); width: 250px; height: 230px; pointer-events: none; }
+.touch .sk { position: absolute; width: 58px; height: 58px; pointer-events: auto; opacity: 0.92; border-radius: 50%; font-size: 1.4rem; }
+.touch .sk .ic img { width: 50px !important; height: 50px !important; border-radius: 50% !important; }
+.touch .sk .cdv { border-radius: 50%; }
+.touch .atk { right: 0; bottom: 0; width: 100px !important; height: 100px !important; border-radius: 50%; grid-column: auto; grid-row: auto; }
+.touch .sk[data-s="Q"] { right: 112px; bottom: 2px; }
+.touch .sk[data-s="W"] { right: 102px; bottom: 70px; }
+.touch .sk[data-s="E"] { right: 58px; bottom: 120px; }
+.touch .sk[data-s="R"] { right: 0; bottom: 140px; width: 64px; height: 64px; }
+.touch .sk[data-s="A"] { right: 178px; bottom: 30px; }
+@media (pointer: coarse) { .tr .pill.coin { display: none; } .tr { gap: 4px; } }
+#login { overflow-y: auto; padding: 12px 0; }
+#login .box { margin: auto; }
+.joy { position: absolute; left: max(18px, env(safe-area-inset-left)); bottom: max(18px, env(safe-area-inset-bottom)); width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(rgba(255,255,255,0.08), rgba(255,255,255,0.03)); border: 2px solid rgba(255, 210, 140, 0.35); pointer-events: auto; touch-action: none; }
+.joy i { position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; background: radial-gradient(#ffe2a0, #c8862a); box-shadow: 0 0 16px rgba(255, 181, 71, 0.6); }
+.touch .sk .key { font-size: 0.75rem; }
+@media (pointer: coarse) { .tip { display: none !important; } }
+@media (max-height: 520px) {
+  html { font-size: 13px; }
+  .screen .top { padding: 6px 12px; }
+  .screen .top h2 { font-size: 1.25rem; }
+  .screen .body { padding: 10px 12px 16px; }
+  .modes { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .mode { min-height: 110px; padding: 10px; }
+  .mode b { font-size: 1.25rem; }
+  .subs { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+  .sub { padding: 8px; font-size: 1rem; }
+  .charwrap { grid-template-columns: minmax(0, 1fr) 300px; }
+  .chars { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); }
+  .detail .big { max-height: 200px; aspect-ratio: 4 / 3; }
+  .detail .big .kb { background-position: center 20%; }
+  #login .box { padding: 14px 16px; width: min(420px, calc(100% - 24px)); }
+  .logo { font-size: 1.7rem; }
+  .field { margin-top: 6px; } .field input { padding: 7px 10px; }
+  #modal .mbox { padding: 12px; max-height: 96vh; }
+  #modal h2 { font-size: 1.35rem; margin-bottom: 6px; }
+  .pk { padding: 10px 8px; } .pk p { margin: 4px 0; font-size: 0.85rem; } .pk b { font-size: 1.1rem; }
+  .story { grid-template-columns: 200px 1fr; } .story .pic { height: 260px; }
+  .hp-box { min-width: 230px; padding: 5px 8px 5px 5px; } .hp-box .face { width: 40px; height: 40px; }
+  #mini { width: 120px; height: 84px; }
+  .stage { font-size: 0.95rem; padding: 3px 10px; }
+  .bossbar { top: 40px; }
+}
+
 #errbox { position: fixed; left: 8px; bottom: 8px; z-index: 99; background: #400; color: #fff; padding: 6px 10px; font-size: 12px; border-radius: 8px; max-width: 60vw; }
 </style>
 </head>
@@ -1713,7 +1759,7 @@ function updateHero(u, dt) {
   const c = ctrlOf(u) || {};
   // 방향키 이동
   if (c.kx || c.ky) {
-    const l = Math.hypot(c.kx, c.ky), s = spdOf(u) * dt;
+    const l = Math.hypot(c.kx, c.ky), s = spdOf(u) * dt * Math.min(1, Math.max(0.35, l));
     u.tx = null; u.x += (c.kx / l) * s; u.y += (c.ky / l) * s; u.moving = true; u.face = Math.atan2(c.ky, c.kx); if (c.kx) u.flip = c.kx < 0; collide(u);
     u.moveT += dt; if (u.moveT > 0.12) { u.moveT = 0; G.parts.push({ x: u.x + rnd(-8, 8), y: u.y + 10, vx: 0, vy: -10, t: 0, max: 0.4, col: "rgba(200,190,170,0.5)", s: 4 }); }
   } else if (u.tx != null) {
@@ -1843,7 +1889,7 @@ function eShot(m, a, spd, dmg, o = {}) { G.projs.push({ x: m.x, y: m.y - m.r * 0
 
 // ---------- 보스 패턴 ----------
 function updateBoss(b, dt) {
-  const tg = G.p.alive ? G.p : null; if (!tg) return;
+  const tg = mobTarget(b) || heroesOf(0).find((h) => h.alive); b.tg = tg; if (!tg) return;
   const ph2 = b.hp < b.maxHp * 0.5, sp = ph2 ? 1.35 : 1;
   if (ph2 && !b.ph2) { b.ph2 = true; G.banner = { text: "분노!", sub: b.name + "의 공격이 빨라집니다", t: 1.6, boss: true }; G.shake = 12; }
   b.t -= dt * sp;
@@ -1854,7 +1900,7 @@ function updateBoss(b, dt) {
   else if (b.st === "charge") { b.x += b.cvx * dt; b.y += b.cvy * dt; collide(b); if (!b.chit && dist(b, tg) < b.r + tg.r) { b.chit = true; damage(tg, b.dmg * 1.4, b); } b.ct -= dt; if (b.ct <= 0) b.st = "busy"; }
 }
 function bossPattern(b, p, ph2) {
-  const tg = G.p, D = b.dmg, mul = diffMul();
+  const tg = b.tg || G.p, D = b.dmg, mul = diffMul();
   const T = (o) => G.tele.push(Object.assign({ t: 0, team: 1, src: b }, o));
   switch (p) {
     case "ring": { const waves = ph2 ? 3 : 2; for (let w = 0; w < waves; w++) schedule(0.5 + w * 0.5, () => { if (!b.alive) return; const n = ph2 ? 22 : 16, off = w * 0.15; for (let i = 0; i < n; i++) eShot(b, off + (i / n) * 6.28, 300, D * 0.7, { r: 12 }); }); b.flash = 0.5; return 0.6 + waves * 0.5; }
@@ -2528,7 +2574,7 @@ function bindInput() {
     if (!G || G.paused) return;
     input.touch = e.pointerType === "touch";
     const w = toWorld(e.clientX, e.clientY); input.mx = w.x; input.my = w.y;
-    if (input.touch) { input.moveHeld = true; setMove(w); e.preventDefault(); return; } // 폰: 누른 곳으로 이동
+    if (input.touch) { if (!document.getElementById("joy")) { input.moveHeld = true; setMove(w); } e.preventDefault(); return; } // 폰: 가상 패드로 이동
     input.mouseT = performance.now();
     const code = "Mouse" + e.button, K = keyMap();
     press(code, true);
@@ -2565,6 +2611,17 @@ function loop(t) {
   try { update(dt); NET.hostTick(dt); render(); UI.hud(); } catch (err) { console.error(err); UI.error && UI.error(err); }
   requestAnimationFrame(loop);
 }
+// 다른 창으로 가면 브라우저가 화면 그리기를 멈추므로, 멀티일 때는 워커 시계로 게임을 계속 돌림
+let bgWorker = null, bgLast = 0;
+function bgTick() {
+  if (!document.hidden || !G || !(G.opt && G.opt.multi) && !G.client) return;
+  const now = performance.now(), dt = Math.min(0.1, (now - bgLast) / 1000 || 0.03); bgLast = now;
+  try { let left = dt; while (left > 0) { const st = Math.min(0.05, left); update(st); NET.hostTick(st); left -= st; } } catch (e) { console.error(e); }
+}
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) { if (!bgWorker) { try { bgWorker = new Worker(URL.createObjectURL(new Blob(["setInterval(()=>postMessage(0),33)"], { type: "text/javascript" }))); bgWorker.onmessage = bgTick; } catch (e) { setInterval(bgTick, 33); } } bgLast = performance.now(); }
+  else lastT = performance.now();
+});
 function initEngine() {
   cv = document.getElementById("game"); ctx = cv.getContext("2d");
   lightCv = document.createElement("canvas"); lightCv.width = 800; lightCv.height = 450; lctx = lightCv.getContext("2d");
@@ -2671,7 +2728,7 @@ const NET = {
     this.sendT -= dt; if (this.sendT > 0) return; this.sendT = 0.05;
     const id = (u) => u._id || (u._id = ++this.uid);
     const r = G.cur, snap = { t: "s", mode: G.mode, fl: G.floor, stg: G.stage, en: G.endlessN, paused: !!G.paused, locked: roomLocked(), trans: G.trans ? [G.trans.mode, G.trans.t, G.trans.max] : null, sh: G.shake };
-    if (this.roomSent !== r) { this.roomSent = r; snap.room = { key: G.curKey, type: r.type, bg: r.bg, obs: r.obs, haz: r.haz, decor: r.decor }; snap.map = [...G.rooms.values()].filter((x) => x.visited || true).map((x) => [x.x, x.y, x.type, x.visited ? 1 : 0, x.cleared ? 1 : 0, Object.keys(x.links).join("")]); }
+    if (this.roomSent !== r) { this.roomSent = r; snap.room = { key: G.curKey, type: r.type, bg: r.bg, obs: r.obs.map((o) => ({ x: o.x, y: o.y, r: o.r, kind: o.kind, prop: o.prop })), haz: r.haz.map((h) => ({ x: h.x, y: h.y, rx: h.rx, ry: h.ry, kind: h.kind, ph: h.ph })), decor: r.decor }; snap.map = [...G.rooms.values()].filter((x) => x.visited || true).map((x) => [x.x, x.y, x.type, x.visited ? 1 : 0, x.cleared ? 1 : 0, Object.keys(x.links).join("")]); }
     else if (Math.random() < 0.1) snap.map = [...G.rooms.values()].map((x) => [x.x, x.y, x.type, x.visited ? 1 : 0, x.cleared ? 1 : 0, Object.keys(x.links).join("")]);
     snap.ln = Object.fromEntries(Object.entries(r.links).map(([d, k]) => { const t = G.rooms.get(k); return [d, [t.type, t.visited ? 1 : 0, t.x, t.y]]; }));
     snap.u = G.units.filter((u) => u.alive || u.kind === "hero").map((u) => {
@@ -2680,7 +2737,7 @@ const NET = {
         (u.invT > 0 || (u.buffs && hasBuff(u, "inv"))) ? 1 : 0, u.buffs && hasBuff(u, "stealth") ? 1 : 0, u.elite ? 1 : 0, u.ph2 ? 1 : 0, +(u.flash || 0).toFixed(2),
         Math.round(u.hp || 0), Math.round(u.maxHp || 0), Math.round(u.shield || 0), +(u.spawnT || 0).toFixed(2), u.e || "", +(u.life || 0).toFixed(1), u.burn ? 1 : 0, u.markT > 0 ? 1 : 0,
         u.kind === "boss" && (u.st === "charge" || u.flash > 0 || (u.st === "busy" && u.t > 0.4)) ? 1 : 0, (u.def && u.def.col) || "", u.kind === "hero" ? u.def.name + " · " + (u.jobName || u.def.job) + (u.formName ? "(" + u.formName + ")" : "") : u.name || "",
-        u.alive ? 1 : 0, (u.buffs && (u.buffs.find((b) => b.col && (b.dr || b.atk || b.inv || b.aura)) || {}).col) || ""];
+        u.alive ? 1 : 0, (u.buffs && (u.buffs.find((b) => b.col && (b.dr || b.atk || b.inv || b.aura)) || {}).col) || "", u.lvl || 0, u.jobName || ""];
       return o;
     });
     snap.p = G.projs.map((p) => [Math.round(p.x), Math.round(p.y), Math.round(p.vx), Math.round(p.vy), p.r, p.col, p.shape, p.team, p.alt || ""]);
@@ -2694,7 +2751,7 @@ const NET = {
     if (G.banner && this.bannerSent !== G.banner) { this.bannerSent = G.banner; snap.bn = { text: G.banner.text, sub: G.banner.sub, t: G.banner.t, boss: G.banner.boss }; }
     const me = this.guestHero;
     if (me) snap.me = { id: id(me), gold: me.gold || 0, lvl: me.lvl, exp: me.exp, cd: me.cd, act: me.active, boons: me.boons, sk: Object.fromEntries(Object.entries(me.sk).map(([k, v]) => [k, { ic: v.ic, icon: v.icon, cd: v.cd, name: v.name, desc: v.desc, grade: v.grade, id: v.id }])), basic: me.def.basic.name, alive: me.alive };
-    snap.host = id(G.p); snap.hn = nick(); snap.cu = G.curse || null;
+    snap.host = id(G.p); snap.hn = nick(); snap.cu = G.curse || null; snap.hu = r.haz.map((h) => (h.up ? 1 : 0));
     if (G.mode === "duel") snap.duel = { round: G.duel.round, wins: G.duel.wins };
     if (G.bossUnit && G.bossUnit.alive) snap.boss = id(G.bossUnit);
     this.send(snap);
@@ -2711,6 +2768,7 @@ const NET = {
   },
   applySnap(m) {
     if (!G || !G.client) return;
+    if (G.cur && m.hu) G.cur.haz.forEach((h, i) => (h.up = !!m.hu[i]));
     Object.assign(G, { curse: m.cu, mode: m.mode, floor: m.fl, stage: m.stg, endlessN: m.en, locked: m.locked, paused: false, shake: Math.max(G.shake, m.sh || 0) });
     if (m.duel) G.duel = m.duel;
     if (m.room) {
@@ -2726,12 +2784,12 @@ const NET = {
     const ck = cx + "," + cy; if (G.rooms.has(ck)) { const cr = G.rooms.get(ck); G.cur.x = cr.x; G.cur.y = cr.y; cr.visited = true; G.rooms.set(ck, Object.assign(cr, { links: G.cur.links })); }
     const seen = new Set(), list = [];
     for (const a of m.u) {
-      const [id, kind, team, x, y, r, art, flip, mv, aa, sa, ht, hi, st, iv, sth, el, p2, fl, hp, mh, sh, sp, e, lf, bu, mk, bp, col, nm, alive, ring] = a;
+      const [id, kind, team, x, y, r, art, flip, mv, aa, sa, ht, hi, st, iv, sth, el, p2, fl, hp, mh, sh, sp, e, lf, bu, mk, bp, col, nm, alive, ring, lvl, jn] = a;
       let u = this.cmap.get(id);
       if (!u) { u = { _id: id, kind, team, x, y, r, ph: id * 1.7, buffs: [], cd: {} }; this.cmap.set(id, u); }
       Object.assign(u, { kind, team, nx: x, ny: y, r, flip: !!flip, moving: mv === 1, dash: mv === 2 ? {} : null, atkAnim: aa, skillAnim: sa, hurtT: ht, hitT: hi, stunT: st, invT: iv ? 1 : 0, elite: !!el, ph2: !!p2, flash: fl,
         hp, maxHp: mh, shield: sh, spawnT: sp, e, life: lf, burn: bu ? {} : null, markT: mk ? 1 : 0, st: bp ? "charge" : "move", t: 0, alive: !!alive, def: Object.assign(u.def || {}, { col, name: (nm || "").split(" · ")[0], job: kind === "hero" ? ((nm || "").split(" · ")[1] || "").replace(/(.*)/, "") : undefined }), name: nm });
-      if (kind === "hero") u.art = art; else u.img = art;
+      if (kind === "hero") { u.art = art; u.lvl = lvl; u.jobName = jn || null; } else u.img = art;
       u.buffs = []; if (sth) u.buffs.push({ stealth: true, t: 1 }); if (ring) u.buffs.push({ col: ring, dr: 1, t: 1 }); if (iv) u.buffs.push({ inv: true, t: 1 });
       if (Math.hypot(u.x - x, u.y - y) > 200) { u.x = x; u.y = y; }
       seen.add(id); list.push(u);
@@ -2796,7 +2854,7 @@ const NET = {
 <script>
 // ===== 등불 미궁: 그림자 원정 — 화면·계정·가챠 =====
 "use strict";
-const GAME_VERSION = "1.0.0";
+const GAME_VERSION = "1.0.1";
 // 자동 업데이트: 게임이 올라가 있는 주소 (빌드 때 채움). 더 새 판이 있으면 알려 줌
 const UPDATE_URL = "https://wjdaudrn091600-ai.github.io/lantern-maze/";
 const verNum = (v) => String(v).split(".").reduce((a, x) => a * 1000 + (+x || 0), 0);
@@ -2970,9 +3028,11 @@ const UI = {
 
   // ----- 공통 화면 틀 -----
   frame(title, body, onBack) {
+    const old = $("#screens .screen .body"), keep = old && UI._frameTitle === title ? old.scrollTop : 0; UI._frameTitle = title;
     $("#screens").innerHTML = `<div class="screen"><div class="top"><button class="back" id="bk">← 뒤로</button><h2>${title}</h2>
       <div class="money"><span class="pill coin">${curIc("coin")} 코인 <b>${SAVE.coins}</b></span></div></div><div class="body">${body}</div></div>`;
     $("#bk").onclick = onBack || (() => UI.menu());
+    if (keep) $("#screens .screen .body").scrollTop = keep;
   },
   open(name, opt) { UI[name](opt || {}); },
 
@@ -3318,10 +3378,20 @@ const UI = {
       <div class="boonlist" id="boons"></div>
       <div class="stage" id="hstage"></div><div class="bossbar" id="hboss" hidden><div id="hbn"></div><div class="bar"><i id="hbhp"></i></div></div>
       <div class="tr"><canvas id="mini" width="340" height="240"></canvas><div class="hudbtns"><span class="pill coin">${curIc("coin")} <b id="hc"></b></span><span class="pill" title="엽전 — 원정 중 상점에서 써요">${curIc("yeop")} 엽전 <b id="hg"></b></span><button class="btn sm" id="hsnd" title="소리 설정">🔊</button><button class="btn sm" id="hp" title="멈춤 (Esc)">⏸</button></div></div>
-      ${touch ? `<div class="touch">${slot("A", "액티브")}${slot("Q", "1")}${slot("W", "2")}<div class="sk atk" data-s="B">⚔️</div>${slot("E", "3")}${slot("R", "4")}</div>`
+      ${touch ? `<div class="joy" id="joy"><i></i></div><div class="touch">${slot("A", "액티브")}${slot("Q", "1")}${slot("W", "2")}<div class="sk atk" data-s="B">⚔️</div>${slot("E", "3")}${slot("R", "4")}</div>`
         : (() => { const K = keyMap(); return `<div class="skills"><div class="sk basic" data-s="B"><span class="key">${keyLabel(K.atk)}</span>${abIc("sk_" + G.p.id + "_b", "⚔️", 46)}</div>${slot("A", keyLabel(K.act))}${slot("Q", keyLabel(K.s1))}${slot("W", keyLabel(K.s2))}${slot("E", keyLabel(K.s3))}${slot("R", keyLabel(K.s4))}</div>`; })()}
       <div class="tip" id="tip" hidden></div>`;
     $("#hp").onclick = () => UI.togglePause();
+    // 가상 패드: 엄지로 끌면 그 방향으로 이동
+    const joy = $("#joy");
+    if (joy) {
+      const knob = joy.querySelector("i"); let id = null;
+      const setV = (e) => { const r = joy.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2; let dx = e.clientX - cx, dy = e.clientY - cy; const L = Math.hypot(dx, dy), M = r.width / 2 - 20; if (L > M) { dx *= M / L; dy *= M / L; }
+        knob.style.transform = `translate(${dx}px,${dy}px)`; const dead = 12; input.kx = Math.abs(dx) > dead ? dx / M : 0; input.ky = Math.abs(dy) > dead ? dy / M : 0; };
+      joy.onpointerdown = (e) => { id = e.pointerId; joy.setPointerCapture(id); input.touch = true; setV(e); e.preventDefault(); };
+      joy.onpointermove = (e) => { if (e.pointerId === id) setV(e); };
+      joy.onpointerup = joy.onpointercancel = (e) => { if (e.pointerId !== id) return; id = null; knob.style.transform = ""; input.kx = input.ky = 0; };
+    }
     $("#hsnd").onclick = () => UI.togglePause();
     document.querySelectorAll("#hud .sk").forEach((el) => {
       const s = el.dataset.s;
@@ -3350,7 +3420,7 @@ const UI = {
     const fr = G.units.find((u) => u.kind === "hero" && u !== p && u.team === p.team);
     $("#fbox").hidden = !fr; $("#boons").style.top = fr ? "150px" : "92px";
     if (fr) { $("#fface").style.backgroundImage = `url(${imgSrc("card_" + fr.art)})`; const nm = (fr.def && fr.def.name) || fr.name || ""; const job = fr.def && fr.def.job ? fr.def.job : (CHARS.find((c) => fr.art && fr.art.startsWith(c.id)) || {}).job || "";
-      $("#fnm").innerHTML = `${esc(fr.guestName || (G.client ? "방장" : "친구"))} <small>${esc(nm)}${job ? " · " + job : ""}${fr.lvl ? " Lv." + fr.lvl : ""}${fr.alive === false ? " · 쓰러짐" : ""}</small>`;
+      $("#fnm").innerHTML = `${esc(fr.guestName || (G.client ? "방장" : "친구"))} <small>${esc(nm)}${fr.jobName ? " · <b style='color:#ffb547'>" + esc(fr.jobName) + "</b>" : job ? " · " + job : ""}${fr.lvl ? " Lv." + fr.lvl : ""}${fr.alive === false ? " · 쓰러짐" : ""}</small>`;
       $("#fhp").style.width = (Math.max(0, fr.hp) / (fr.maxHp || 1)) * 100 + "%"; $("#fsh").style.width = Math.min(100, ((fr.shield || 0) / (fr.maxHp || 1)) * 100) + "%"; }
     const bk = p.boons.join(","); if ($("#boons").dataset.k !== bk) { $("#boons").dataset.k = bk; $("#boons").innerHTML = p.boons.map((k) => `<span title="${BOONS[k].name}: ${BOONS[k].desc}">${abIc("bn_" + k, BOONS[k].ic, 26)}</span>`).join(""); }
     document.querySelectorAll("#hud .sk").forEach((el) => {
