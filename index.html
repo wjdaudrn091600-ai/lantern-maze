@@ -3006,7 +3006,7 @@ const NET = {
 <script>
 // ===== 등불 미궁: 그림자 원정 — 화면·계정·가챠 =====
 "use strict";
-const GAME_VERSION = "1.0.4";
+const GAME_VERSION = "1.0.5";
 // 자동 업데이트: 게임이 올라가 있는 주소 (빌드 때 채움). 더 새 판이 있으면 알려 줌
 const UPDATE_URL = "https://wjdaudrn091600-ai.github.io/lantern-maze/";
 const verNum = (v) => String(v).split(".").reduce((a, x) => a * 1000 + (+x || 0), 0);
@@ -3724,10 +3724,10 @@ const UI = {
     $("#sgo").onclick = () => { UI.closeModal(); then(); };
   },
   result(r, isClient) {
-    const title = r.mode === "raid" ? (r.win ? "🐉 보스 레이드 완료!" : "레이드 실패") : r.mode === "duel" ? (r.win ? "🏆 대전 승리!" : "대전 패배") : r.storyDone ? "🌅 스토리 완료!" : r.win ? "원정 성공" : "쓰러졌습니다";
+    const title = r.mode === "practice" ? "🎯 연습 끝" : r.mode === "dev" ? "🛠 개발자 맵 끝" : r.mode === "raid" ? (r.win ? "🐉 보스 레이드 완료!" : "레이드 실패") : r.mode === "duel" ? (r.win ? "🏆 대전 승리!" : "대전 패배") : r.storyDone ? "🌅 스토리 완료!" : r.win ? "원정 성공" : "쓰러졌습니다";
     const newChars = Object.keys(SAVE.chars).length - (G.unlocksAtStart || 0);
     UI.modal(`<h2>${title}</h2><div class="res">
-      ${r.mode === "raid" ? `<div><b>${G.raidN || 0} / ${RAID_ORDER.length}</b>보스 처치</div>` : r.mode === "story" ? `<div><b>${r.floor}층 ${r.stage}</b>도달</div>` : r.mode === "endless" ? `<div><b>${r.endless}</b>번째 방</div>` : `<div><b>${r.duel.wins[0]} : ${r.duel.wins[1]}</b>점수</div>`}
+      ${r.mode === "raid" ? `<div><b>${G.raidN || 0} / ${RAID_ORDER.length}</b>보스 처치</div>` : r.mode === "story" ? `<div><b>${r.floor}층 ${r.stage}</b>도달</div>` : r.mode === "endless" ? `<div><b>${r.endless}</b>번째 방</div>` : r.duel ? `<div><b>${r.duel.wins[0]} : ${r.duel.wins[1]}</b>점수</div>` : `<div><b>${r.mode === "dev" ? "🛠" : "🎯"}</b>${r.mode === "dev" ? "개발자 맵" : "연습장"} 종료</div>`}
       <div><b>${r.kills}</b>처치</div><div><b>Lv.${r.lvl}</b>레벨</div><div><b>${curIc("coin")} +${r.coinRw || 0}</b>코인 보상</div><div><b>${r.coin}</b>코인</div>${newChars > 0 ? `<div><b>${newChars}</b>새 캐릭터</div>` : ""}</div>
       ${unclaimed() ? '<p style="text-align:center;color:var(--gold2)">🎯 받을 수 있는 미션 보상이 있어요!</p>' : ""}
       <div class="center"><button class="btn gold" id="again">다시 도전</button><button class="btn" id="home">처음 화면</button></div>`);
