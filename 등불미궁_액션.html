@@ -61,7 +61,7 @@ h3 { font-family: var(--display); font-weight: 400; font-size: 1.25rem; margin: 
 /* 메인 메뉴 */
 #menu .hero-bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.22; pointer-events: none; }
 #menu .body { position: relative; display: flex; flex-direction: column; align-items: center; gap: 18px; }
-.modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; width: min(1000px, 100%); }
+.modes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; width: min(1100px, 100%); }
 .mode { position: relative; overflow: hidden; border-radius: 18px; border: 1px solid #4d4060; min-height: 210px; padding: 16px; text-align: left; display: flex; flex-direction: column; justify-content: flex-end; background: #1a1424; transition: transform 0.12s, border-color 0.2s, box-shadow 0.2s; }
 .mode:hover { transform: translateY(-3px); border-color: var(--gold); box-shadow: 0 10px 30px rgba(255, 181, 71, 0.2); }
 .mode .img { position: absolute; inset: 0; background-size: cover; background-position: center 25%; opacity: 0.6; }
@@ -230,7 +230,7 @@ table.rt { border-collapse: collapse; font-size: 0.9rem; } table.rt td { border:
   .screen .top { padding: 6px 12px; }
   .screen .top h2 { font-size: 1.25rem; }
   .screen .body { padding: 10px 12px 16px; }
-  .modes { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .modes { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
   .mode { min-height: 110px; padding: 10px; }
   .mode b { font-size: 1.25rem; }
   .subs { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
@@ -583,7 +583,8 @@ const FLOORS = [
   { name: "독 안개 늪", room: "f4", wall: ["#1f2a24", "#2c3b33", "#0e1511"], light: "#b48cff", enemies: ["slime", "skel", "brute", "wisp", "clone"], boss: "b_boss4", bossName: "늪 두꺼비 왕", hazard: "poison", bgm: "explore2" },
   { name: "저승 궁궐", room: "f5", wall: ["#2a1a2e", "#40263f", "#140b16"], light: "#c38bff", enemies: ["bat", "skel", "brute", "wisp", "clone"], boss: "b_boss5", bossName: "저승 염라 사자", hazard: "soul", bgm: "explore2" },
 ];
-const STAGES_PER_FLOOR = 4;
+const STAGES_PER_FLOOR = 10; // 층마다 10스테이지: 5번째 중간보스, 10번째 층 보스 (사용자 요청 11-11)
+const RAID_ORDER = ["b_boss", "b_boss3", "b_boss2", "b_boss4", "b_boss6", "b_boss5"];
 // 레벨업 필요 경험치 (사용자 요청 11-10: 레벨업 빠르게) — 몬스터 하나가 4~9, 레벨 2까지 약 3마리
 const expNeed = (lv) => Math.round(10 + lv * 7 + lv * lv * 0.35);
 const STORY = {
@@ -993,7 +994,7 @@ function newRun(opt) {
     if (S.equip.pet && PETS[S.equip.pet] && PETS[S.equip.pet].m) mods.push(scaleMods(PETS[S.equip.pet].m, 1 + 0.2 * ((S.pets[S.equip.pet] || 1) - 1)));
     if (S.equip.title && TITLES[S.equip.title]) mods.push(TITLES[S.equip.title].m);
   }
-  const startLv = opt.mode === "story" ? 1 + (opt.floor - 1) * 4 : opt.mode === "duel" ? 10 : 1;
+  const startLv = opt.mode === "story" ? 1 + (opt.floor - 1) * 8 : opt.mode === "duel" ? 10 : opt.mode === "raid" ? 12 : 1;
   const p = makeHero(opt.char, { form, lvl: startLv, mods, stars: S.stars[opt.char] || 0, equip: S.skillEquip[opt.char], skillLv: S.skills, x: RW / 2, y: RH / 2 + 120 });
   G = { mode: opt.mode, floor: opt.floor || 1, stage: 1, p, units: [p], projs: [], zones: [], tele: [], fx: [], parts: [], texts: [], drops: [], orbs: [], timers: [],
     time: 0, shake: 0, paused: false, over: false, goldRun: 0, rooms: new Map(), cur: null, roomT: 0, stageHit: false, kills: 0, goldGot: 0, coinGot: 0, roomsCleared: 0,
@@ -1004,6 +1005,7 @@ function newRun(opt) {
   G.midnight = new Date().getHours() === 0 && opt.mode !== "duel"; // 이스터 에그: 자정의 미궁
   if (opt.mode === "story") { S.stats.story_start = 1; startStage(); }
   else if (opt.mode === "endless") { G.floor = 1; startEndless(); }
+  else if (opt.mode === "raid") startRaid();
   else startDuel();
   UI.onRunStart();
   if (G.midnight) setTimeout(() => { if (G) G.banner = { text: "🌙 자정의 미궁", sub: "자정에만 열리는 푸른 등불 — 엽전 +30%", t: 3.5 }; }, 3200);
@@ -1014,7 +1016,8 @@ function scaleMods(m, k) { const o = {}; for (const x in m) o[x] = x === "revive
 function diffMul() {
   if (G.mode === "endless") { const n = G.endlessN; return { hp: Math.pow(1.5, n / 8) * (1 + n * 0.02), dmg: Math.pow(1.28, n / 8), spd: 1 + Math.min(0.25, n * 0.006), tier: Math.floor(n / 8) }; }
   const f = G.floor - 1, s = G.stage - 1;
-  return { hp: Math.pow(1.6, f) * (1 + 0.13 * s), dmg: Math.pow(1.33, f) * (1 + 0.08 * s), spd: 1 + f * 0.05 + s * 0.015, tier: f };
+  if (G.mode === "raid") { const n = G.raidN || 0; return { hp: 1.6 * Math.pow(1.45, n), dmg: 1.3 * Math.pow(1.22, n), spd: 1 + n * 0.04, tier: n }; }
+  return { hp: Math.pow(1.6, f) * (1 + 0.07 * s), dmg: Math.pow(1.33, f) * (1 + 0.045 * s), spd: 1 + f * 0.05 + s * 0.008, tier: f };
 }
 const theme = () => FLOORS[(G.mode === "endless" ? Math.floor(G.endlessN / 10) : G.floor - 1) % FLOORS.length];
 
@@ -1024,7 +1027,7 @@ const keyOf = (x, y) => x + "," + y;
 function newRoom(x, y, type) { return { x, y, type, links: {}, visited: false, cleared: false, spawned: false, obs: [], haz: [], decor: [], cache: null, bg: rint(1, 2), seed: Math.random() }; }
 function startStage() {
   G.rooms = new Map(); G.stageHit = false;
-  const n = Math.min(13, 6 + G.floor + G.stage);
+  const n = Math.min(12, 5 + G.floor + Math.ceil(G.stage / 2));
   const start = newRoom(0, 0, "start"); G.rooms.set("0,0", start);
   const list = [start];
   let guard = 0;
@@ -1039,7 +1042,7 @@ function startStage() {
   const dists = new Map([["0,0", 0]]), q = ["0,0"];
   while (q.length) { const k = q.shift(), r = G.rooms.get(k); for (const d in r.links) { const k2 = r.links[d]; if (!dists.has(k2)) { dists.set(k2, dists.get(k) + 1); q.push(k2); } } }
   const others = list.slice(1).sort((a, b) => dists.get(keyOf(b.x, b.y)) - dists.get(keyOf(a.x, a.y)));
-  others[0].type = "boss";
+  others[0].type = G.stage % 5 === 0 ? "boss" : "exit";
   const leaves = others.slice(1).filter((r) => Object.keys(r.links).length === 1);
   const rest = others.slice(1);
   const take = (arr) => { const r = arr.find((x) => x.type === "fight"); return r; };
@@ -1085,6 +1088,21 @@ function makeEndlessExits(room, entry) {
   }
 }
 
+// ---------- 보스 레이드 (사용자 요청 11-11): 보스 6마리 연달아, 사이에 회복·강화, 잡을 때마다 코인 ----------
+function startRaid() {
+  G.rooms = new Map(); G.raidN = 0; G.floor = 5;
+  const r = newRoom(0, 0, "raid"); r.cleared = true; G.rooms.set("0,0", r);
+  enterRoom("0,0", null); G.p.x = RW / 2; G.p.y = BB - 120;
+  for (let i = 0; i < 3; i++) takeBoon(G.p, rollBoons(1, 12)[0]);
+  G.banner = { text: "🐉 보스 레이드", sub: "보스 6마리를 차례로 쓰러뜨려요 · 쓰러뜨릴 때마다 코인", t: 3, boss: true };
+  setTimeout(() => raidNext(), 3200);
+}
+function raidNext() {
+  if (!G || G.mode !== "raid" || G.over) return;
+  if (G.raidN >= RAID_ORDER.length) { G.raidDone = true; endRun(true); return; }
+  const key = RAID_ORDER[G.raidN], b = makeBoss(key, diffMul(), false); b.x = RW / 2; b.y = BT + 200; G.units.push(b); G.bossUnit = b;
+  G.banner = { text: `${G.raidN + 1} / ${RAID_ORDER.length} · ${b.name}`, sub: "보스 레이드", t: 2.4, boss: true }; UI.music(G.raidN === RAID_ORDER.length - 1 ? "boss_final" : "boss");
+}
 // ---------- 1대1 대전 ----------
 function startDuel() {
   if (G.opt.multi) {
@@ -1144,8 +1162,8 @@ function enterRoom(k, fromDir) {
 }
 function populate(r) {
   const mul = diffMul(), th = theme();
-  if (r.type === "fight" || r.type === "elite") {
-    if (r.cleared) return;
+  if (r.type === "fight" || r.type === "elite" || r.type === "exit") {
+    if (r.cleared) { if (r.type === "exit" && !r.stairsTaken) G.drops.push({ type: "stairs", x: RW / 2, y: RH / 2 }); return; }
     // 방당 몬스터 5~10마리 랜덤 (사용자 요청 11-10). 정예 방은 정예 2마리 포함
     const n = rint(5, 10) - (r.type === "elite" ? 2 : 0);
     const pool = G.mode === "endless" ? Object.keys(ENEMIES).slice(0, Math.min(6, 3 + Math.floor(G.endlessN / 5))) : th.enemies;
@@ -1177,7 +1195,7 @@ function populate(r) {
       G.drops.push(Object.assign({ type: "shop", price: Math.round(base * (it.k === "coin" ? 1 : pm)), x, y }, it)); });
   } else if (r.type === "rest" && !r.cleared) {
     r.cleared = true; G.drops.push({ type: "spring", x: RW / 2, y: RH / 2 + 20, used: false });
-  } else if (r.type === "start" || r.type === "arena") {
+  } else if (r.type === "start" || r.type === "arena" || r.type === "raid") {
     r.cleared = true;
   }
   if (r.type === "boss" && r.cleared && G.mode === "story" && !r.stairsTaken) G.drops.push({ type: "stairs", x: RW / 2, y: RH / 2 });
@@ -1208,7 +1226,7 @@ function buildRoom(r) {
   // 방 종류 바닥 문양
   if (r.type === "boss") rune(g, RW / 2, RH / 2 + 30, 300, "rgba(255,70,60,0.35)");
   if (r.type === "treasure") rune(g, RW / 2, RH / 2 + 20, 170, "rgba(255,200,90,0.4)");
-  if (r.type === "arena") rune(g, RW / 2, RH / 2 + 20, 330, "rgba(200,170,255,0.3)");
+  if (r.type === "arena" || r.type === "raid") rune(g, RW / 2, RH / 2 + 20, 330, r.type === "raid" ? "rgba(255,90,70,0.35)" : "rgba(200,170,255,0.3)");
   if (r.type === "shop") { g.fillStyle = "rgba(120,30,40,0.45)"; roundRect(g, RW / 2 - 420, RH / 2 - 190, 840, 420, 22); g.fill(); g.strokeStyle = "rgba(255,210,120,0.5)"; g.lineWidth = 3; g.stroke(); }
   // 기둥·장애물
   const layouts = [[], [[0.3, 0.38], [0.7, 0.38], [0.3, 0.75], [0.7, 0.75]], [[0.5, 0.56]], [[0.22, 0.56], [0.78, 0.56]], [[0.35, 0.33], [0.65, 0.78]], [[0.18, 0.3], [0.82, 0.3], [0.18, 0.82], [0.82, 0.82]], [[0.4, 0.45], [0.6, 0.45], [0.4, 0.7], [0.6, 0.7]]];
@@ -1355,6 +1373,8 @@ const blocked = (x, y) => x < BL || x > BR || y < BT || y > BB || G.cur.obs.some
 // ---------- 효과 발동 ----------
 function foesOf(team) { return G.units.filter((u) => u.alive && u.team !== team && (u.kind === "mob" || u.kind === "boss" || u.kind === "hero") && !(u.spawnT > 0)); }
 function aimPoint(u) {
+  // 타겟팅: 대상을 고정하면 공격·스킬이 그 적에게 (사용자 요청 11-11)
+  if (u === G.p && G.target && G.target.alive) return { x: G.target.x, y: G.target.y };
   const c = ctrlOf(u);
   if (c && !c.touch && (c.mouseT > 0 || c.mt)) return { x: c.mx, y: c.my };
   const foes = foesOf(u.team).filter((f) => !(f.kind === "hero" && hasBuff(f, "stealth")));
@@ -1602,6 +1622,7 @@ function bossDown(b) {
   // 층 보스: 보스 전용 액티브 보장 / 중간보스: 전용템 없음, 40% 확률로 일반 액티브 (사용자 요청 11-10)
   if (!b.mini) G.drops.push({ type: "act", k: BOSS_ACT[b.type] || rollActive([], 3), x: RW / 2 + 160, y: RH / 2 + 60 });
   else if (Math.random() < 0.4) G.drops.push({ type: "act", k: rollActive([], 2), x: RW / 2 + 160, y: RH / 2 + 60 });
+  if (G.mode === "raid") { G.raidN++; gainCoin(1, "레이드 보스 처치"); for (const h of heroesOf(0)) { if (!h.alive) { h.alive = true; h.hp = h.maxHp * 0.3; } healUnit(h, h.maxHp * 0.3); } G.banner = { text: "보스 처치!", sub: G.raidN < RAID_ORDER.length ? "잠시 뒤 다음 보스" : "레이드 완료!", t: 2.4 }; setTimeout(raidNext, 4500); checkUnlocks(); saveGame(); return; }
   if (G.mode === "story") { G.drops.push({ type: "stairs", x: RW / 2, y: RH / 2 }); G.banner = { text: "보스 처치!", sub: "금빛 계단에 서면 다음으로", t: 2.4 }; }
   else G.banner = { text: "보스 처치!", sub: "문이 열렸습니다", t: 2.2 };
   UI.music(G.mode === "story" ? theme().bgm : "endless");
@@ -1681,7 +1702,7 @@ function update(dt) {
   // 방 밖으로 밀려난 몬스터는 정리 (문이 계속 잠기는 일 방지)
   for (const u of G.units) if (u.team === 1 && u.alive && (u.kind === "mob" || u.kind === "boss") && (u.x < BL - 30 || u.x > BR + 30 || u.y < BT - 40 || u.y > BB + 30 || isNaN(u.x) || isNaN(u.y))) { u.outT = (u.outT || 0) + dt; if (u.outT > 3) { u.x = RW / 2; u.y = RH / 2; collide(u); u.outT = 0; } }
   if (r.pending > 0 && G.units.filter((u) => u.team === 1 && u.alive).length <= 2) { const m = diffMul(); for (let i = 0; i < r.pending; i++) spawnMob(pick(r.pool), m, Math.random() < r.eliteP); r.pending = 0; }
-  if (!r.cleared && (r.type === "fight" || r.type === "elite") && G.roomT > 0.8 && !roomLocked()) roomCleared();
+  if (!r.cleared && (r.type === "fight" || r.type === "elite" || r.type === "exit") && G.roomT > 0.8 && !roomLocked()) { roomCleared(); if (r.type === "exit") { G.drops.push({ type: "stairs", x: RW / 2, y: RH / 2 }); G.banner = { text: "출구를 찾았어요!", sub: "금빛 계단에 서면 다음 스테이지", t: 2.2 }; } }
   if (!r.cleared && r.type === "boss" && G.roomT > 1 && !roomLocked()) { r.cleared = true; G.roomsCleared++; SAVE.stats.rooms = (SAVE.stats.rooms || 0) + 1; if (G.mode === "endless") makeEndlessExits(r, null); }
   // 이스터 에그: 스토리 1-1 시작 방 왼쪽 위 모퉁이에 3초 서 있으면 숨은 상자
   const p = G.p;
@@ -2081,6 +2102,7 @@ function stageClear() {
 // 원정 보상 엽전: 처치·방·보스·진행도 + 남은 금화의 절반 (엽전 보너스 아티팩트·칭호 적용)
 function runReward(r) {
   if (r.mode === "duel") return r.win ? (G.mirror ? 4 : 2) : 0;
+  if (r.mode === "raid") return (G.raidN || 0) + (G.raidDone ? 5 : 0); // 보스마다 1개는 이미 받음 + 완주 보너스
   const prog = r.mode === "story" ? ((r.floor - 1) * STAGES_PER_FLOOR + r.stage) * 20 + (r.storyDone ? 600 : 0) : r.endless * 12;
   const base = r.kills * 2 + r.rooms * 10 + (G.bossKills || 0) * 45 + prog + Math.floor((r.goldRun || 0) / 2);
   return Math.max(r.kills > 0 ? 1 : 0, Math.round(base * (1 + ((G.p.m && G.p.m.gold) || 0) * 0.3) / 250));
@@ -2139,6 +2161,9 @@ function render() {
   // 클릭 표시
   if (G.p.tx != null && G.p.moving) { g.strokeStyle = "rgba(127,255,170,0.7)"; g.lineWidth = 2; const k = (G.time * 2) % 1; g.beginPath(); g.ellipse(G.p.tx, G.p.ty, 18 * (1 - k * 0.4), 8 * (1 - k * 0.4), 0, 0, 7); g.stroke(); }
   drawItemInfo(g); drawGuide(g);
+  if (G.target && G.target.alive && !G.client) { const t = G.target, R = t.r + 22, a = G.time * 2; g.save(); g.strokeStyle = "#ff5a4d"; g.lineWidth = 3; g.shadowColor = "#ff5a4d"; g.shadowBlur = 10;
+    for (let i = 0; i < 4; i++) { g.beginPath(); g.ellipse(t.x, t.y + t.r * 0.4, R, R * 0.5, 0, a + i * Math.PI / 2, a + i * Math.PI / 2 + 0.9); g.stroke(); } g.restore(); }
+  else if (G.target && !G.target.alive) G.target = null;
   if (G.banner) drawBanner(g, G.banner);
   g.restore();
   if (G.trans) { const k = G.trans.mode === "out" ? 1 - G.trans.t / G.trans.max : G.trans.t / G.trans.max; g.fillStyle = `rgba(0,0,0,${clamp(k, 0, 1)})`; g.fillRect(0, 0, RW, RH); }
@@ -2186,9 +2211,9 @@ function drawDoors3D(g, r, dc, dop) {
     if (k > 0) { g.globalAlpha = k; g.drawImage(dop, -W / 2, -H, W, H); }
     g.globalAlpha = 1;
     // 다음 방 종류 색 (열렸을 때만 문턱에 은은하게), 잠기면 붉은 빛
-    const col = !t ? "#a0784a" : t.visited ? "#8a8090" : t.type === "boss" && (t.mid || (G.mode === "story" && G.stage < STAGES_PER_FLOOR)) ? "#ff9a3d" : ({ boss: "#ff4d4d", treasure: "#ffc84a", shop: "#5fc8ff", rest: "#7fe08a", elite: "#c38bff" }[t.type] || "#a0784a");
+    const col = !t ? "#a0784a" : t.visited ? "#8a8090" : t.type === "boss" && (t.mid || (G.mode === "story" && G.stage < STAGES_PER_FLOOR)) ? "#ff9a3d" : ({ exit: "#fff2b0", boss: "#ff4d4d", treasure: "#ffc84a", shop: "#5fc8ff", rest: "#7fe08a", elite: "#c38bff" }[t.type] || "#a0784a");
     if (k > 0.5) { const pul = 0.5 + Math.sin(G.time * 4) * 0.25; g.globalAlpha = (k - 0.5) * 2 * (0.5 + pul * 0.5); g.shadowColor = col; g.shadowBlur = 24; g.strokeStyle = col; g.lineWidth = 4; g.beginPath(); g.ellipse(0, -8, W * 0.32, 14, 0, 0, 7); g.stroke(); g.shadowBlur = 0;
-      const ic = !t || t.visited ? "" : t.type === "boss" ? "☠" : { treasure: "✦", shop: "⚖", rest: "♨", elite: "⚔" }[t.type] || "";
+      const ic = !t || t.visited ? "" : t.type === "boss" ? "☠" : { exit: "⇣", treasure: "✦", shop: "⚖", rest: "♨", elite: "⚔" }[t.type] || "";
       if (ic) { g.rotate(-pos[2]); g.font = "26px sans-serif"; g.textAlign = "center"; g.fillStyle = col; g.fillText(ic, 0, 8); } }
     else if (locked && G.mode !== "duel") { g.globalAlpha = 0.35 + Math.sin(G.time * 5) * 0.15; g.fillStyle = "#ff3b30"; g.beginPath(); g.ellipse(0, -H * 0.45, W * 0.22, H * 0.3, 0, 0, 7); g.fill(); }
     g.restore();
@@ -2196,7 +2221,7 @@ function drawDoors3D(g, r, dc, dop) {
 }
 function drawDoorsFlat(g, r) {
   const locked = roomLocked() || G.mode === "duel";
-  const typeCol = (k) => { const t = G.rooms.get(k); if (!t) return "#8a6a4a"; if (t.visited) return "#8a8090"; if (t.type === "boss" && (t.mid || (G.mode === "story" && G.stage < STAGES_PER_FLOOR))) return "#ff9a3d"; return { boss: "#ff4d4d", treasure: "#ffc84a", shop: "#5fc8ff", rest: "#7fe08a", elite: "#c38bff" }[t.type] || "#a0784a"; };
+  const typeCol = (k) => { const t = G.rooms.get(k); if (!t) return "#8a6a4a"; if (t.visited) return "#8a8090"; if (t.type === "boss" && (t.mid || (G.mode === "story" && G.stage < STAGES_PER_FLOOR))) return "#ff9a3d"; return { exit: "#fff2b0", boss: "#ff4d4d", treasure: "#ffc84a", shop: "#5fc8ff", rest: "#7fe08a", elite: "#c38bff" }[t.type] || "#a0784a"; };
   for (const dk in r.links) {
     const col = typeCol(r.links[dk]);
     g.save();
@@ -2302,8 +2327,8 @@ function drawGuide(g) {
   const st = G.drops.find((d) => d.type === "stairs");
   const DP = { N: [RW / 2, BT - 10], S: [RW / 2, BB + 10], W: [BL - 10, RH / 2 + 20], E: [BR + 10, RH / 2 + 20] };
   if (st) { tx = st.x; ty = st.y; label = "계단"; }
-  else { const L = G.cur.links || {}; const ds = Object.keys(L); const boss = ds.find((d) => { const t = G.rooms.get(L[d]); return t && t.type === "boss" && !t.cleared; }); const nv = ds.find((d) => { const t = G.rooms.get(L[d]); return t && !t.visited; });
-    const d = boss || nv; if (!d) return; [tx, ty] = DP[d]; label = boss ? "보스" : "안 가 본 방"; }
+  else { const L = G.cur.links || {}; const ds = Object.keys(L); const boss = ds.find((d) => { const t = G.rooms.get(L[d]); return t && (t.type === "boss" || t.type === "exit") && !t.cleared; }); const nv = ds.find((d) => { const t = G.rooms.get(L[d]); return t && !t.visited; });
+    const d = boss || nv; if (!d) return; [tx, ty] = DP[d]; label = boss ? (G.rooms.get(L[boss]).type === "boss" ? "보스" : "출구") : "안 가 본 방"; }
   const dd = Math.hypot(tx - p.x, ty - p.y); if (dd < 140) return;
   const a = Math.atan2(ty - p.y, tx - p.x), rr = 70, pul = 0.6 + Math.sin(G.time * 5) * 0.3;
   g.save(); g.translate(p.x + Math.cos(a) * rr, p.y - 20 + Math.sin(a) * rr); g.rotate(a); g.globalAlpha = pul;
@@ -2548,8 +2573,8 @@ function sfx(kind) {
 
 // ---------- 입력 ----------
 // 조작: 기본 WASD 이동, 왼쪽 클릭 공격(커서 조준), 1~4 스킬, 스페이스 액티브, Esc 멈춤. 설정에서 키를 바꿀 수 있음 (사용자 요청 11-10)
-const DEFAULT_KEYS = { up: "KeyW", down: "KeyS", left: "KeyA", right: "KeyD", atk: "Mouse0", atk2: "ShiftLeft", s1: "Digit1", s2: "Digit2", s3: "Digit3", s4: "Digit4", act: "Space", pause: "Escape" };
-const KEY_ACTIONS = [["up", "위로 이동"], ["down", "아래로 이동"], ["left", "왼쪽 이동"], ["right", "오른쪽 이동"], ["atk", "기본 공격"], ["atk2", "기본 공격 (보조키)"], ["s1", "스킬 1"], ["s2", "스킬 2"], ["s3", "스킬 3"], ["s4", "스킬 4 (궁극기)"], ["act", "액티브"], ["pause", "멈춤 메뉴"]];
+const DEFAULT_KEYS = { up: "KeyW", down: "KeyS", left: "KeyA", right: "KeyD", atk: "Mouse0", atk2: "ShiftLeft", target: "Tab", s1: "Digit1", s2: "Digit2", s3: "Digit3", s4: "Digit4", act: "Space", pause: "Escape" };
+const KEY_ACTIONS = [["up", "위로 이동"], ["down", "아래로 이동"], ["left", "왼쪽 이동"], ["right", "오른쪽 이동"], ["atk", "기본 공격"], ["atk2", "기본 공격 (보조키)"], ["s1", "스킬 1"], ["s2", "스킬 2"], ["s3", "스킬 3"], ["s4", "스킬 4 (궁극기)"], ["act", "액티브"], ["target", "대상 고정 (타겟팅)"], ["pause", "멈춤 메뉴"]];
 const keyMap = () => Object.assign({}, DEFAULT_KEYS, (typeof SAVE !== "undefined" && SAVE && SAVE.settings && SAVE.settings.keys) || {});
 function keyLabel(code) {
   if (!code) return "-";
@@ -2574,12 +2599,14 @@ function bindInput() {
     if (!G || G.paused) return;
     input.touch = e.pointerType === "touch";
     const w = toWorld(e.clientX, e.clientY); input.mx = w.x; input.my = w.y;
-    if (input.touch) { if (!document.getElementById("joy")) { input.moveHeld = true; setMove(w); } e.preventDefault(); return; } // 폰: 가상 패드로 이동
+    if (input.touch) { if (!pickTargetAt(w) && !document.getElementById("joy")) { input.moveHeld = true; setMove(w); } e.preventDefault(); return; } // 폰: 적을 누르면 대상 고정, 이동은 가상 패드
     input.mouseT = performance.now();
     const code = "Mouse" + e.button, K = keyMap();
     press(code, true);
     const sl = Object.keys(SLOT_OF).find((x) => K[x] === code); if (sl) useSlot(SLOT_OF[sl]);
     if (K.pause === code) UI.togglePause();
+    if (code === "Mouse2" && K.target !== "Mouse2") { if (!pickTargetAt(w)) G.target = null; }
+    if (K.target === code) cycleTarget();
     e.preventDefault();
   });
   window.addEventListener("pointermove", (e) => { if (!G) return; const w = toWorld(e.clientX, e.clientY); input.mx = w.x; input.my = w.y; if (e.pointerType === "mouse") input.mouseT = performance.now(); if (input.moveHeld && input.touch && !G.paused) setMove(w); });
@@ -2600,8 +2627,16 @@ function bindInput() {
     press(e.code, true); arrowSet(e.code, true); // 방향키는 언제나 이동으로도 쓸 수 있음
     if (G.paused || UI.modalOpen()) return;
     const sl = Object.keys(SLOT_OF).find((x) => K[x] === code); if (sl) useSlot(SLOT_OF[sl]);
+    if (K.target === code) { e.preventDefault(); cycleTarget(); }
   });
 }
+// 대상 고르기: 다음으로 가까운 적 / 지정한 자리 근처의 적
+function cycleTarget() {
+  if (!G || G.client) return; const p = G.p, foes = foesOf(p.team).sort((a, b) => dist(p, a) - dist(p, b)).slice(0, 6);
+  if (!foes.length) { G.target = null; return; }
+  const i = foes.indexOf(G.target); G.target = foes[(i + 1) % foes.length]; sfx("pick");
+}
+function pickTargetAt(w) { const foes = foesOf(G.p.team); let best = null, bd = 90; for (const f of foes) { const d = Math.hypot(f.x - w.x, f.y - 30 - w.y); if (d < bd + f.r) { bd = d; best = f; } } G.target = best; if (best) sfx("pick"); return !!best; }
 function useSlot(s) { if (!G || G.paused) return; if (NET.client) { NET.sendKey(s); return; } if (!useSkill(G.p, s)) UI.flashSlot(s); }
 function setMove(w) { if (NET.client) { input.tx = w.x; input.ty = w.y; input.tseq = (input.tseq || 0) + 1; return; } const p = G.p; if (!p.alive || p.stunT > 0) return; p.tx = clamp(w.x, 0, RW); p.ty = clamp(w.y, 0, RH); }
 
@@ -2751,7 +2786,7 @@ const NET = {
     if (G.banner && this.bannerSent !== G.banner) { this.bannerSent = G.banner; snap.bn = { text: G.banner.text, sub: G.banner.sub, t: G.banner.t, boss: G.banner.boss }; }
     const me = this.guestHero;
     if (me) snap.me = { id: id(me), gold: me.gold || 0, lvl: me.lvl, exp: me.exp, cd: me.cd, act: me.active, boons: me.boons, sk: Object.fromEntries(Object.entries(me.sk).map(([k, v]) => [k, { ic: v.ic, icon: v.icon, cd: v.cd, name: v.name, desc: v.desc, grade: v.grade, id: v.id }])), basic: me.def.basic.name, alive: me.alive };
-    snap.host = id(G.p); snap.hn = nick(); snap.cu = G.curse || null; snap.hu = r.haz.map((h) => (h.up ? 1 : 0));
+    snap.host = id(G.p); snap.hn = nick(); snap.cu = G.curse || null; snap.rn = G.raidN || 0; snap.hu = r.haz.map((h) => (h.up ? 1 : 0));
     if (G.mode === "duel") snap.duel = { round: G.duel.round, wins: G.duel.wins };
     if (G.bossUnit && G.bossUnit.alive) snap.boss = id(G.bossUnit);
     this.send(snap);
@@ -2769,7 +2804,7 @@ const NET = {
   applySnap(m) {
     if (!G || !G.client) return;
     if (G.cur && m.hu) G.cur.haz.forEach((h, i) => (h.up = !!m.hu[i]));
-    Object.assign(G, { curse: m.cu, mode: m.mode, floor: m.fl, stage: m.stg, endlessN: m.en, locked: m.locked, paused: false, shake: Math.max(G.shake, m.sh || 0) });
+    Object.assign(G, { raidN: m.rn, curse: m.cu, mode: m.mode, floor: m.fl, stage: m.stg, endlessN: m.en, locked: m.locked, paused: false, shake: Math.max(G.shake, m.sh || 0) });
     if (m.duel) G.duel = m.duel;
     if (m.room) {
       const R = { x: 0, y: 0, type: m.room.type, links: {}, visited: true, cleared: !m.locked, obs: m.room.obs, haz: m.room.haz, decor: m.room.decor, bg: m.room.bg, laid: true, cache: null };
@@ -2854,7 +2889,7 @@ const NET = {
 <script>
 // ===== 등불 미궁: 그림자 원정 — 화면·계정·가챠 =====
 "use strict";
-const GAME_VERSION = "1.0.1";
+const GAME_VERSION = "1.0.2";
 // 자동 업데이트: 게임이 올라가 있는 주소 (빌드 때 채움). 더 새 판이 있으면 알려 줌
 const UPDATE_URL = "https://wjdaudrn091600-ai.github.io/lantern-maze/";
 const verNum = (v) => String(v).split(".").reduce((a, x) => a * 1000 + (+x || 0), 0);
@@ -3047,6 +3082,7 @@ const UI = {
         <div class="modes">
           <button class="mode" data-m="story"><div class="img" style="background-image:url(${imgSrc("cg_end")})"></div><b>📖 스토리 모드</b><span>5개 층 · 층마다 4스테이지 · 도달 ${SAVE.story.maxFloor}층</span></button>
           <button class="mode" data-m="endless"><div class="img" style="background-image:url(${imgSrc("room_f5_1")})"></div><b>♾️ 무한의 방</b><span>끝없이 이어지는 방 · 최고 기록 ${SAVE.stats.endlessBest || 0}번째 방</span></button>
+          <button class="mode" data-m="raid"><div class="img" style="background-image:url(${imgSrc("b_boss5")})"></div><b>🐉 보스 레이드</b><span>보스 6마리 연속 · 잡을 때마다 코인</span></button>
           <button class="mode" data-m="duel"><div class="img" style="background-image:url(${imgSrc("card_thunder")})"></div><b>⚔️ 1대1 대전</b><span>컴퓨터 영웅과 3판 2선승 · ${SAVE.stats.duelWins || 0}승</span></button>
         </div>
         <div class="subs">
@@ -3069,7 +3105,7 @@ const UI = {
   // ----- 캐릭터 -----
   chars(opt) {
     const mode = opt.mode, sel = opt.sel || SAVE.sel;
-    const title = mode ? { story: "📖 스토리 모드 · 캐릭터 선택", endless: "♾️ 무한의 방 · 캐릭터 선택", duel: "⚔️ 1대1 대전 · 캐릭터 선택" }[mode] : "캐릭터";
+    const title = mode ? { story: "📖 스토리 모드 · 캐릭터 선택", endless: "♾️ 무한의 방 · 캐릭터 선택", duel: "⚔️ 1대1 대전 · 캐릭터 선택", raid: "🐉 보스 레이드 · 캐릭터 선택" }[mode] : "캐릭터";
     const grid = CHARS.map((c) => {
       const own = !!SAVE.chars[c.id], art = charArt(c.id, c.forms ? "wolf" : null);
       return `<button class="ch ${own ? "" : "lock"} ${c.id === sel ? "on" : ""}" data-c="${c.id}" style="background-image:url(${imgSrc("card_" + art)})">
@@ -3262,6 +3298,8 @@ const UI = {
         <li>층·스테이지가 오를수록 몬스터가 더 많고 단단하고 아파요. 새 층에 처음 가면 코인 4개. 도달한 층부터 다시 시작할 수 있어요.</li></ul>
       <h3>♾️ 무한의 방</h3><ul><li>방을 정리하면 문이 2~3개 열려요. 문 색으로 다음 방 종류를 짐작해 골라요. 10번째 방마다 보스. 최고 기록 10방마다 코인 2개 (처음 한 번).</li>
         <li>상인 방·보물 방은 랜덤으로 나와요 (상인 10%, 보물 12%, 샘 10%, 정예 12%).</li></ul>
+      <h3>🐉 보스 레이드</h3><ul><li>보스 6마리와 연달아 싸워요. 레벨 12·강화 3개로 시작, 보스 사이에 체력 30% 회복. 보스마다 코인 1개, 모두 잡으면 +5. 멀티 협동도 돼요.</li></ul>
+      <h3>🎯 타겟팅</h3><ul><li>PC: Tab(키 설정에서 변경)으로 가까운 적을 차례로 고정하거나, 적을 마우스 오른쪽으로 눌러 고정. 폰: 적을 손가락으로 누르면 고정. 고정하면 공격·스킬이 그 적에게 날아가요.</li></ul>
       <h3>⚔️ 1대1 대전</h3><ul><li>컴퓨터 영웅과 3판 2선승 (멀티에서는 친구와). 양쪽 레벨 10, 아티팩트·펫·칭호는 빠져요 (가챠 스킬은 적용). 이기면 엽전 60.</li></ul>
       <h3>👥 멀티 (친구와 함께)</h3><ul><li>처음 화면 '멀티'에서 방장이 모드를 고르면 방 코드 5자리가 나와요. 친구가 코드로 참가하면 방장이 '함께 출발'.</li>
         <li>스토리·무한의 방은 협동, 1대1 대전은 친구와 대결. 인터넷이 필요하고, 둘 다 같은 최신 판을 써야 해요.</li>
@@ -3301,7 +3339,7 @@ const UI = {
     };
     const myPick = `<h3 style="margin-top:16px">내 캐릭터 고르기 <span class="muted">(눌러서 바꾸기 · 아티팩트·펫·칭호·스킬 장착도 그대로 가져가요)</span></h3>
       <div class="chars">${owned.map((id) => `<button class="ch ${id === SAVE.sel ? "on" : ""}" data-mc="${id}" style="background-image:url(${imgSrc("card_" + charArt(id, CHAR[id].forms ? "wolf" : null))})"><span class="nm">${CHAR[id].name}<small>${CHAR[id].job}</small></span></button>`).join("")}</div>`;
-    const MODE = { story: "📖 스토리 협동", endless: "♾️ 무한의 방 협동", duel: "⚔️ 1대1 대전" };
+    const MODE = { story: "📖 스토리 협동", endless: "♾️ 무한의 방 협동", raid: "🐉 보스 레이드 협동", duel: "⚔️ 1대1 대전" };
     let body = "";
     if (NET.role === "host") {
       const L = NET.lobby, g = L.guest, duel = L.mode === "duel";
@@ -3413,7 +3451,7 @@ const UI = {
     $("#hxp").style.width = G.mode === "duel" ? "0" : (p.exp / expNeed(p.lvl)) * 100 + "%";
     $("#hc").textContent = SAVE.coins; $("#hg").textContent = p.gold || 0;
     const cu = G.curse ? ` · ${CURSES[G.curse].ic} ${CURSES[G.curse].name}` : "";
-    const st = (G.mode === "story" ? `📖 ${G.floor}층 · ${theme().name} · ${G.stage}/${STAGES_PER_FLOOR} 스테이지` : G.mode === "endless" ? `♾️ 무한의 방 · ${G.endlessN}번째 방 (최고 ${SAVE.stats.endlessBest || 0})` : `⚔️ ${G.duel.round}라운드 · ${G.duel.wins[0]} : ${G.duel.wins[1]}`) + cu;
+    const st = (G.mode === "raid" ? `🐉 보스 레이드 · ${Math.min((G.raidN || 0) + 1, RAID_ORDER.length)} / ${RAID_ORDER.length}` : G.mode === "story" ? `📖 ${G.floor}층 · ${theme().name} · ${G.stage}/${STAGES_PER_FLOOR} 스테이지` : G.mode === "endless" ? `♾️ 무한의 방 · ${G.endlessN}번째 방 (최고 ${SAVE.stats.endlessBest || 0})` : `⚔️ ${G.duel.round}라운드 · ${G.duel.wins[0]} : ${G.duel.wins[1]}`) + cu;
     $("#hstage").textContent = st;
     const b = G.mode === "duel" ? G.bot : G.bossUnit && G.bossUnit.alive ? G.bossUnit : null;
     $("#hboss").hidden = !b; if (b) { $("#hbn").textContent = b.kind === "hero" ? `${b.guestName ? b.guestName + " — " : ""}${(b.def.name || b.name || "").replace(/\(.*\)/, "")}${b.def.job ? " · " + b.def.job : ""}${b.formName ? "(" + b.formName + ")" : ""}` : b.name; $("#hbhp").style.width = (Math.max(0, b.hp) / b.maxHp) * 100 + "%"; }
@@ -3527,10 +3565,10 @@ const UI = {
     $("#sgo").onclick = () => { UI.closeModal(); then(); };
   },
   result(r, isClient) {
-    const title = r.mode === "duel" ? (r.win ? "🏆 대전 승리!" : "대전 패배") : r.storyDone ? "🌅 스토리 완료!" : r.win ? "원정 성공" : "쓰러졌습니다";
+    const title = r.mode === "raid" ? (r.win ? "🐉 보스 레이드 완료!" : "레이드 실패") : r.mode === "duel" ? (r.win ? "🏆 대전 승리!" : "대전 패배") : r.storyDone ? "🌅 스토리 완료!" : r.win ? "원정 성공" : "쓰러졌습니다";
     const newChars = Object.keys(SAVE.chars).length - (G.unlocksAtStart || 0);
     UI.modal(`<h2>${title}</h2><div class="res">
-      ${r.mode === "story" ? `<div><b>${r.floor}층 ${r.stage}</b>도달</div>` : r.mode === "endless" ? `<div><b>${r.endless}</b>번째 방</div>` : `<div><b>${r.duel.wins[0]} : ${r.duel.wins[1]}</b>점수</div>`}
+      ${r.mode === "raid" ? `<div><b>${G.raidN || 0} / ${RAID_ORDER.length}</b>보스 처치</div>` : r.mode === "story" ? `<div><b>${r.floor}층 ${r.stage}</b>도달</div>` : r.mode === "endless" ? `<div><b>${r.endless}</b>번째 방</div>` : `<div><b>${r.duel.wins[0]} : ${r.duel.wins[1]}</b>점수</div>`}
       <div><b>${r.kills}</b>처치</div><div><b>Lv.${r.lvl}</b>레벨</div><div><b>${curIc("coin")} +${r.coinRw || 0}</b>코인 보상</div><div><b>${r.coin}</b>코인</div>${newChars > 0 ? `<div><b>${newChars}</b>새 캐릭터</div>` : ""}</div>
       ${unclaimed() ? '<p style="text-align:center;color:var(--gold2)">🎯 받을 수 있는 미션 보상이 있어요!</p>' : ""}
       <div class="center"><button class="btn gold" id="again">다시 도전</button><button class="btn" id="home">처음 화면</button></div>`);
@@ -3632,7 +3670,8 @@ else if (/autotest/.test(location.hash)) {
           if (st) { G.p.x = st.x; G.p.y = st.y; return; }
           if (G.mode === "duel") { if (G.bot.alive) damage(G.bot, G.bot.hp + 1, G.p, false, {}); window._log.push("d" + G.duel.wins.join(":")); return; }
           if (G.mode === "endless") { if (G.endlessN >= 32) { damage(G.p, 99999, null, false, {}); return; } if (!roomLocked() && !G.trans) { const d = Object.keys(G.cur.links).find((k) => !G.rooms.get(G.cur.links[k]).visited); if (d) enterRoom(G.cur.links[d], d); } window._log[0] = "e" + G.endlessN; return; }
-          if (G.cur.type !== "boss") { for (const [k, r] of G.rooms) if (r.type === "boss") { enterRoom(k, "N"); window._log.push(G.floor + "-" + G.stage); break; } }
+          if (G.mode === "raid") { window._log[0] = "raid" + (G.raidN || 0); return; }
+          if (G.cur.type !== "boss" && G.cur.type !== "exit") { for (const [k, r] of G.rooms) if (r.type === "boss" || r.type === "exit") { enterRoom(k, "N"); window._log.push(G.floor + "-" + G.stage); break; } }
           document.title = `FLOW room:${G.cur.type} u:${G.units.map((u) => u.kind + (u.alive ? "" : "x")).join("/")} drops:${G.drops.map((d) => d.type).join("/")} trans:${G.trans ? G.trans.mode : "-"} log:${window._log.join(",")} ${G.floor}-${G.stage} lv${G.p.lvl} coins${SAVE.coins} max${SAVE.story.maxFloor} chars${Object.keys(SAVE.chars).length} err:${$("#errbox").hidden ? 0 : $("#errbox").textContent}`;
         } catch (e) { document.title = "EXC " + e.message; }
       }, 150);
