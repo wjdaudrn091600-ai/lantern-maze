@@ -284,7 +284,7 @@ const CHARS = [
       { name: "철벽 자세", ic: "🛡️", cd: 14, desc: "4초 동안 받는 피해 -50%, 최대 체력 20% 보호막", fx: [{ t: "buff", dur: 4, dr: 0.5, col: "#ffd27a" }, { t: "heal", shield: 0.2 }] },
       { name: "검기 폭풍", ic: "🌪️", cd: 40, ult: true, desc: "2.4초 동안 주변을 8번 베어 각 130% 피해", fx: [{ t: "repeat", n: 8, gap: 0.3, fx: { t: "nova", r: 220, d: 1.3, col: "#ffb547", follow: true } }] },
     ] },
-  { id: "archer", name: "설아", job: "궁수", unlock: { type: "mission", stat: "kills", n: 150, text: "몬스터 150마리 처치 (누적)" }, col: "#6db6ff", hp: 185, atk: 22, spd: 265, range: "원거리",
+  { id: "archer", name: "설아", job: "궁수", unlock: { type: "mission", reqs: [{ stat: "kills", n: 300, text: "몬스터 300마리" }], text: "몬스터 300마리 처치 (누적)" }, col: "#6db6ff", hp: 185, atk: 22, spd: 265, range: "원거리",
     basic: { name: "각궁 사격", cd: 0.42, fx: [{ t: "proj", d: 1, spd: 900, life: 0.75, r: 8, col: "#cfe8ff", shape: "arrow" }] },
     sk: [
       { name: "세 갈래 화살", ic: "🏹", cd: 5, desc: "화살 5발을 부채꼴로 쏴 각 110% 피해", fx: [{ t: "proj", n: 5, spread: 0.5, d: 1.1, spd: 950, life: 0.7, r: 8, col: "#cfe8ff", shape: "arrow", pierce: 1 }] },
@@ -292,7 +292,7 @@ const CHARS = [
       { name: "화살비", ic: "🌧️", cd: 11, desc: "커서 위치에 3초 동안 화살비 (초당 120% 피해, 느려짐)", fx: [{ t: "zone", r: 150, dur: 3, dps: 1.2, slow: 0.4, col: "#9fd1ff", at: "cursor" }] },
       { name: "천궁 일시", ic: "☄️", cd: 38, ult: true, desc: "모든 적을 꿰뚫는 거대한 화살 (650% 피해)", fx: [{ t: "beam", len: 1400, w: 70, d: 6.5, col: "#bfe3ff", delay: 0.35 }] },
     ] },
-  { id: "spear", name: "도윤", job: "창병", unlock: { type: "mission", stat: "bosses", n: 3, text: "보스 3마리 처치 (누적)" }, col: "#7aa2c8", hp: 250, atk: 21, spd: 245, range: "근접(긴)",
+  { id: "spear", name: "도윤", job: "창병", unlock: { type: "mission", reqs: [{ stat: "bosses", n: 5, text: "보스 5마리" }], text: "보스 5마리 처치 (누적)" }, col: "#7aa2c8", hp: 250, atk: 21, spd: 245, range: "근접(긴)",
     basic: { name: "창 찌르기", cd: 0.55, fx: [{ t: "arc", d: 1.1, r: 160, ang: 0.6, col: "#d5e6ff" }] },
     sk: [
       { name: "돌격 찌르기", ic: "🔱", cd: 6, desc: "길게 돌진하며 180% 피해", fx: [{ t: "dash", dist: 320, d: 1.8, col: "#d5e6ff" }] },
@@ -300,7 +300,7 @@ const CHARS = [
       { name: "투창", ic: "🎯", cd: 9, desc: "모든 적을 꿰뚫는 창을 던져 260% 피해, 느려짐", fx: [{ t: "proj", d: 2.6, spd: 1000, life: 1, r: 14, col: "#e4efff", shape: "spear", pierce: 99, slow: 0.5 }] },
       { name: "백창진", ic: "⚡", cd: 42, ult: true, desc: "커서 주변에 창 14자루를 떨어뜨려 각 200% 피해", fx: [{ t: "strike", n: 14, scatter: 220, r: 80, d: 2.0, delay: 0.6, stagger: 0.08, col: "#d5e6ff" }] },
     ] },
-  { id: "monk", name: "무진", job: "권법가", unlock: { type: "mission", stat: "rooms", n: 40, text: "방 40개 정리 (누적)" }, col: "#ff9a4d", hp: 240, atk: 19, spd: 275, range: "근접",
+  { id: "monk", name: "무진", job: "권법가", unlock: { type: "mission", reqs: [{ stat: "rooms", n: 80, text: "방 80개" }], text: "방 80개 정리 (누적)" }, col: "#ff9a4d", hp: 240, atk: 19, spd: 275, range: "근접",
     basic: { name: "연타", cd: 0.3, fx: [{ t: "arc", d: 0.8, r: 85, ang: 1.4, col: "#ffd08a" }] },
     sk: [
       { name: "비룡각", ic: "🦶", cd: 6, desc: "날아차기로 돌진 후 착지 폭발 150%+150%", fx: [{ t: "dash", dist: 240, d: 1.5, col: "#ffd08a" }, { t: "nova", r: 130, d: 1.5, col: "#ffd08a" }] },
@@ -308,7 +308,7 @@ const CHARS = [
       { name: "금강불괴", ic: "🧘", cd: 15, desc: "5초 동안 받는 피해 -60%, 체력 12% 회복", fx: [{ t: "buff", dur: 5, dr: 0.6, col: "#ffcf5a" }, { t: "heal", pct: 0.12 }] },
       { name: "백렬권", ic: "👊", cd: 36, ult: true, desc: "1.6초 동안 앞쪽을 16번 때려 각 90% 피해", fx: [{ t: "repeat", n: 16, gap: 0.1, fx: { t: "arc", d: 0.9, r: 130, ang: 1.2, col: "#ffcf5a", aim: true } }] },
     ] },
-  { id: "gunner", name: "철매", job: "포수", unlock: { type: "mission", stat: "maxLevel", n: 12, text: "한 판에서 레벨 12 달성" }, col: "#ff6a4d", hp: 190, atk: 30, spd: 250, range: "원거리",
+  { id: "gunner", name: "철매", job: "포수", unlock: { type: "mission", reqs: [{ stat: "maxLevel", n: 18, text: "한 판 레벨 18" }], text: "한 판에서 레벨 18 달성" }, col: "#ff6a4d", hp: 190, atk: 30, spd: 250, range: "원거리",
     basic: { name: "화승총", cd: 0.8, fx: [{ t: "proj", d: 1, spd: 1300, life: 0.6, r: 7, col: "#ffe2a0" }] },
     sk: [
       { name: "산탄 사격", ic: "💥", cd: 5, desc: "가까이 산탄 7발, 각 70% 피해 + 밀쳐냄", fx: [{ t: "proj", n: 7, spread: 0.7, d: 0.7, spd: 1100, life: 0.32, r: 7, col: "#ffd27a", knock: 60 }] },
@@ -316,7 +316,7 @@ const CHARS = [
       { name: "화약 단지", ic: "💣", cd: 10, desc: "커서에 단지를 던져 1초 뒤 큰 폭발 320% + 기절", fx: [{ t: "strike", n: 1, r: 150, d: 3.2, delay: 1, stun: 1, col: "#ff7a3d" }] },
       { name: "홍이포 포격", ic: "🎆", cd: 40, ult: true, desc: "커서 주변에 포탄 8발, 각 280% 피해", fx: [{ t: "strike", n: 8, scatter: 230, r: 120, d: 2.8, delay: 0.8, stagger: 0.18, col: "#ff6a3d" }] },
     ] },
-  { id: "priest", name: "연화", job: "무녀", unlock: { type: "special", stat: "bossHighHp", n: 1, text: "체력 60% 이상 남긴 채 보스 처치" }, col: "#ff8fc8", hp: 200, atk: 18, spd: 260, range: "원거리",
+  { id: "priest", name: "연화", job: "무녀", unlock: { type: "special", reqs: [{ stat: "bossHighHp", n: 3, text: "체력 60% 이상으로 보스 3번" }, { stat: "rooms", n: 60, text: "방 60개" }], text: "체력 60% 이상 남기고 보스 3번 + 방 60개" }, col: "#ff8fc8", hp: 200, atk: 18, spd: 260, range: "원거리",
     basic: { name: "방울 파동", cd: 0.5, fx: [{ t: "proj", d: 1, spd: 700, life: 0.8, r: 12, col: "#ffd6ef", pierce: 1 }] },
     sk: [
       { name: "방울 울림", ic: "🔔", cd: 7, desc: "주변 적 1.2초 기절 + 130% 피해", fx: [{ t: "nova", r: 180, d: 1.3, stun: 1.2, col: "#ffd6ef" }] },
@@ -324,7 +324,7 @@ const CHARS = [
       { name: "오방기 결계", ic: "🎏", cd: 13, desc: "자기 자리에 5초 결계 (적 느려짐·초당 100% 피해, 안에서 받는 피해 -30%)", fx: [{ t: "zone", r: 200, dur: 5, dps: 1.0, slow: 0.45, guard: 0.3, col: "#ff9ad5", at: "self" }] },
       { name: "신내림", ic: "✨", cd: 45, ult: true, desc: "8초 동안 공격력 +60%·공격 속도 +40%, 체력 30% 회복", fx: [{ t: "buff", dur: 8, atk: 0.6, as: 0.4, col: "#ffb3e0" }, { t: "heal", pct: 0.3 }] },
     ] },
-  { id: "necro", name: "흑운", job: "강령술사", unlock: { type: "special", stat: "bossLowHp", n: 1, text: "내 체력 15% 이하에서 보스 처치" }, col: "#9b7bff", hp: 190, atk: 20, spd: 250, range: "원거리",
+  { id: "necro", name: "흑운", job: "강령술사", unlock: { type: "special", reqs: [{ stat: "bossLowHp", n: 2, text: "체력 15% 이하로 보스 2번" }, { stat: "deaths", n: 5, text: "5번 쓰러지기" }], text: "체력 15% 이하로 보스 2번 + 5번 쓰러지기" }, col: "#9b7bff", hp: 190, atk: 20, spd: 250, range: "원거리",
     basic: { name: "원혼 구슬", cd: 0.55, fx: [{ t: "proj", d: 1, spd: 650, life: 1, r: 11, col: "#a98bff", home: 2.5 }] },
     sk: [
       { name: "원혼 소환", ic: "👻", cd: 9, desc: "원혼 2마리를 10초 동안 부름", fx: [{ t: "summon", kind: "ghost", n: 2, dur: 10 }] },
@@ -332,7 +332,7 @@ const CHARS = [
       { name: "공포", ic: "😱", cd: 12, desc: "주변 적 2초 동안 크게 느려짐 + 밀쳐냄", fx: [{ t: "nova", r: 230, d: 0.6, slow: 0.7, slowDur: 2, knock: 180, col: "#8a5bff" }] },
       { name: "망자의 군단", ic: "💀", cd: 46, ult: true, desc: "해골 병사 6명을 12초 동안 부름", fx: [{ t: "summon", kind: "skeleton", n: 6, dur: 12 }] },
     ] },
-  { id: "assassin", name: "야명", job: "자객", unlock: { type: "special", stat: "fastClear", n: 1, text: "몬스터 5마리 이상 방을 10초 안에 정리" }, col: "#ff4d6a", hp: 180, atk: 24, spd: 290, range: "근접",
+  { id: "assassin", name: "야명", job: "자객", unlock: { type: "special", reqs: [{ stat: "fastClear", n: 5, text: "10초 안에 방 정리 5번" }, { stat: "elites", n: 20, text: "정예 20마리" }], text: "10초 안에 방 정리 5번 + 정예 20마리" }, col: "#ff4d6a", hp: 180, atk: 24, spd: 290, range: "근접",
     basic: { name: "쌍단검", cd: 0.32, fx: [{ t: "arc", d: 0.85, r: 90, ang: 1.5, col: "#ff9aa8" }] },
     sk: [
       { name: "그림자 이동", ic: "🌑", cd: 5, desc: "커서로 순간이동, 도착 지점 150% 피해", fx: [{ t: "blink", dist: 330 }, { t: "nova", r: 110, d: 1.5, col: "#ff6a85" }] },
@@ -340,7 +340,7 @@ const CHARS = [
       { name: "은신", ic: "🕶️", cd: 14, desc: "3초 동안 적이 놓침, 이동 +40%, 다음 공격 치명타", fx: [{ t: "buff", dur: 3, stealth: true, spd: 0.4, crit: 1, col: "#ff8fa3" }] },
       { name: "그림자 난도", ic: "🗡️", cd: 38, ult: true, desc: "가까운 적 8명에게 차례로 날아가 각 260% 피해", fx: [{ t: "flurry", n: 8, d: 2.6, gap: 0.12 }] },
     ] },
-  { id: "dosa", name: "청운", job: "도사", unlock: { type: "floor", n: 2, text: "스토리 2층 도달" }, col: "#5fd4c4", hp: 185, atk: 21, spd: 255, range: "원거리",
+  { id: "dosa", name: "청운", job: "도사", unlock: { type: "floor", n: 2, reqs: [{ stat: "curses", n: 3, text: "저주 스테이지 3번" }], text: "스토리 2층 도달 + 저주 스테이지 3번" }, col: "#5fd4c4", hp: 185, atk: 21, spd: 255, range: "원거리",
     basic: { name: "부적 던지기", cd: 0.5, fx: [{ t: "proj", d: 1, spd: 760, life: 0.9, r: 10, col: "#ffe08a", shape: "talisman", home: 3 }] },
     sk: [
       { name: "화염 부적", ic: "🔥", cd: 6, desc: "부딪히면 폭발 200% 피해 + 불태움", fx: [{ t: "proj", d: 2.0, spd: 750, life: 1, r: 14, col: "#ff8a3d", shape: "talisman", explode: 120, burn: 3 }] },
@@ -348,7 +348,7 @@ const CHARS = [
       { name: "뇌우 부적", ic: "⚡", cd: 9, desc: "번개가 적 6명에게 튀며 각 170% 피해", fx: [{ t: "chain", n: 6, d: 1.7, range: 420, col: "#9fe8ff" }] },
       { name: "오행진", ic: "☯️", cd: 42, ult: true, desc: "커서에 6초 동안 큰 진 (초당 220% 피해, 크게 느려짐)", fx: [{ t: "zone", r: 260, dur: 6, dps: 2.2, slow: 0.6, col: "#5fd4c4", at: "cursor", rune: true }] },
     ] },
-  { id: "yinyang", name: "백야", job: "음양사", unlock: { type: "floor", n: 3, text: "스토리 3층 도달" }, col: "#e8e3f5", hp: 195, atk: 21, spd: 255, range: "원거리",
+  { id: "yinyang", name: "백야", job: "음양사", unlock: { type: "floor", n: 3, reqs: [{ stat: "skillsUsed", n: 800, text: "스킬 800번" }], text: "스토리 3층 도달 + 스킬 800번 사용" }, col: "#e8e3f5", hp: 195, atk: 21, spd: 255, range: "원거리",
     basic: { name: "음양 구슬", cd: 0.48, fx: [{ t: "proj", d: 1, spd: 720, life: 0.9, r: 11, col: "#f5f2ff", alt: "#2a2440" }] },
     sk: [
       { name: "태극 구슬", ic: "⚪", cd: 9, desc: "8초 동안 흑백 구슬 4개가 주위를 돌며 피해 (각 90%)", fx: [{ t: "orbit", n: 4, dur: 8, r: 110, d: 0.9, col: "#f5f2ff", alt: "#2a2440" }] },
@@ -356,7 +356,7 @@ const CHARS = [
       { name: "식신 부르기", ic: "📜", cd: 13, desc: "종이 식신 3마리를 9초 동안 부름", fx: [{ t: "summon", kind: "shikigami", n: 3, dur: 9 }] },
       { name: "태극 대폭발", ic: "☯️", cd: 44, ult: true, desc: "커서에 1.2초 뒤 거대 폭발 750% + 기절", fx: [{ t: "strike", n: 1, r: 300, d: 7.5, delay: 1.2, stun: 1.5, col: "#e8e3f5", taeguk: true }] },
     ] },
-  { id: "summoner", name: "소담", job: "소환사", unlock: { type: "floor", n: 4, text: "스토리 4층 도달" }, col: "#3fd0d8", hp: 200, atk: 19, spd: 255, range: "원거리",
+  { id: "summoner", name: "소담", job: "소환사", unlock: { type: "floor", n: 4, reqs: [{ stat: "petsOwned", n: 8, text: "펫 8종" }], text: "스토리 4층 도달 + 펫 8종 모으기" }, col: "#3fd0d8", hp: 200, atk: 19, spd: 255, range: "원거리",
     basic: { name: "영혼 화살", cd: 0.55, fx: [{ t: "proj", d: 1, spd: 760, life: 0.85, r: 10, col: "#9ff3f8" }] },
     sk: [
       { name: "영호 소환", ic: "🐯", cd: 12, desc: "영혼 호랑이를 14초 동안 부름 (강함)", fx: [{ t: "summon", kind: "tiger", n: 1, dur: 14 }] },
@@ -364,7 +364,7 @@ const CHARS = [
       { name: "영혼 연결", ic: "💠", cd: 13, desc: "체력 18% 회복, 소환수 6초 강화 (+60%)", fx: [{ t: "heal", pct: 0.18 }, { t: "buff", dur: 6, summonBoost: 0.6, col: "#9ff3f8" }] },
       { name: "사신수 강림", ic: "🐉", cd: 48, ult: true, desc: "청룡·백호·주작·현무를 13초 동안 부름", fx: [{ t: "summon", kind: "guardian", n: 4, dur: 13 }] },
     ] },
-  { id: "berserker", name: "거칠", job: "광전사", unlock: { type: "floor", n: 5, text: "스토리 5층 도달" }, col: "#ff6b3d", hp: 290, atk: 25, spd: 245, range: "근접",
+  { id: "berserker", name: "거칠", job: "광전사", unlock: { type: "floor", n: 5, reqs: [{ stat: "elites", n: 60, text: "정예 60마리" }], text: "스토리 5층 도달 + 정예 60마리" }, col: "#ff6b3d", hp: 290, atk: 25, spd: 245, range: "근접",
     basic: { name: "쌍도끼", cd: 0.65, fx: [{ t: "arc", d: 1.2, r: 120, ang: 2.4, col: "#ffb08a" }] },
     sk: [
       { name: "도끼 던지기", ic: "🪓", cd: 6, desc: "꿰뚫는 도끼 200% 피해", fx: [{ t: "proj", d: 2.0, spd: 800, life: 0.8, r: 18, col: "#ffcfb0", shape: "axe", pierce: 99 }] },
@@ -405,7 +405,7 @@ const CHARS = [
       { name: "저승문", ic: "🚪", cd: 46, ult: true, desc: "커서에 5초 동안 저승문 (초당 300%, 체력 15% 이하 적 즉사)", fx: [{ t: "zone", r: 240, dur: 5, dps: 3.0, slow: 0.5, execute: 0.15, col: "#7b3bff", at: "cursor", rune: true }] },
     ] },
   // 봉냥이: 수인. 출발할 때마다 늑대인간(남) / 구미호(여) 중 랜덤
-  { id: "bong", name: "봉냥이", job: "수인", unlock: { type: "special", stat: "storyClear", n: 1, text: "스토리 모드 전체 완료 (5층 최종보스 처치)" }, col: "#ffb36b", hp: 235, atk: 23, spd: 275, range: "근접/원거리",
+  { id: "bong", name: "봉냥이", job: "수인", unlock: { type: "special", reqs: [{ stat: "storyClear", n: 1, text: "스토리 전체 완료" }, { stat: "endlessBest", n: 30, text: "무한의 방 30번째 방" }, { stat: "raidClear", n: 1, text: "보스 레이드 완료" }], text: "스토리 전체 완료 + 무한의 방 30번째 방 + 보스 레이드 완료" }, col: "#ffb36b", hp: 235, atk: 23, spd: 275, range: "근접/원거리",
     forms: {
       wolf: { formName: "늑대인간", art: "bong_wolf", hp: 265, atk: 25, spd: 265, range: "근접",
         basic: { name: "늑대 발톱", cd: 0.38, fx: [{ t: "arc", d: 1.0, r: 110, ang: 2.0, col: "#e3e7f0" }] } },
@@ -745,6 +745,23 @@ const SHOP_ITEMS = {
   coin: { name: "가챠 코인", ic: "🪙", desc: "가챠 코인 1개", price: 260 },
 };
 
+// ===== 등급·사거리·조각·강화 — 사용자 요청 11-11 =====
+// 등급이 높을수록 기본 체력·공격력이 높다 (C 기본·미션 < B 특수·층 < A 봉냥이 < S 가챠)
+const CHAR_GRADE = { musa: "C", archer: "C", spear: "C", monk: "C", gunner: "C", priest: "B", necro: "B", assassin: "B", dosa: "B", yinyang: "B", summoner: "B", berserker: "B", bong: "A", moon: "S", thunder: "S", fox: "S", reaper: "S" };
+const GRADE_INFO = { C: { mul: 1.0, col: "#9fb0c8" }, B: { mul: 1.08, col: "#6db6ff" }, A: { mul: 1.18, col: "#c38bff" }, S: { mul: 1.3, col: "#ffb547" } };
+// 기본 공격 사거리 (근거리 = 휘두르는 거리, 원거리 = 날아가는 거리)
+const CHAR_RANGE = { musa: 110, archer: 760, spear: 170, monk: 88, gunner: 840, priest: 520, necro: 560, assassin: 92, dosa: 620, yinyang: 560, summoner: 600, berserker: 128, moon: 122, thunder: 150, fox: 540, reaper: 160, bong_wolf: 115, bong_fox: 500 };
+const SHARD = { unlockGacha: 40, hitShards: 20, rate: 0.03, pity: 30, maxEnh: 10, enhCost: (lv) => 5 * (lv + 1) };
+const PET_RAR_MUL = { 1: 1.0, 2: 1.2, 3: 1.45, 4: 1.8 };
+// 사거리 적용: 근거리는 휘두르는 반경, 원거리는 투사체 수명
+(function applyRanges() {
+  const fix = (basic, R) => { for (const fx of basic.fx) { if (fx.t === "arc") fx.r = R; if (fx.t === "proj") fx.life = +(R / fx.spd).toFixed(2); } };
+  for (const c of CHARS) {
+    if (c.forms) { for (const f in c.forms) if (CHAR_RANGE["bong_" + f]) fix(c.forms[f].basic, CHAR_RANGE["bong_" + f]); }
+    else if (CHAR_RANGE[c.id]) fix(c.basic, CHAR_RANGE[c.id]);
+  }
+})();
+
 </script>
 <script>
 // ===== 수집품 (사용자 요청 11-10) =====
@@ -940,7 +957,7 @@ function hasBuff(u, k) { return u.buffs.some((b) => b[k]); }
 function recalc(u) {
   const m = sumMods([...u.baseMods, ...u.boons.map((k) => BOONS[k].m), ...(u.jobs || []).map((j) => j.m)]);
   u.m = m;
-  const lvG = u.lvl - 1, star = 1 + 0.06 * (u.stars || 0);
+  const lvG = u.lvl - 1, star = (1 + 0.05 * (u.enh || 0)) * ((GRADE_INFO[CHAR_GRADE[u.id]] || GRADE_INFO.C).mul);
   const ratio = u.maxHp ? u.hp / u.maxHp : 1;
   u.maxHp = Math.round(u.def.hp * (1 + 0.085 * lvG) * (1 + (m.hp || 0)) * star * (u.hpMul || 1));
   u.hp = Math.min(u.maxHp, Math.max(1, Math.round(u.maxHp * ratio)));
@@ -958,7 +975,7 @@ function drMul(u) { let r = 1 - (u.drBase || 0); for (const b of u.buffs) if (b.
 function makeHero(cid, o) {
   const form = o.form || null, def = charDef(cid, form);
   const u = { kind: "hero", team: o.team || 0, id: cid, form, def, art: charArt(cid, form), x: o.x || RW / 2, y: o.y || RH / 2, r: 22, lvl: o.lvl || 1, exp: 0,
-    hp: 1, maxHp: 0, shield: 0, buffs: [], boons: [], baseMods: o.mods || [], stars: o.stars || 0, hpMul: o.hpMul, atkMul: o.atkMul,
+    hp: 1, maxHp: 0, shield: 0, buffs: [], boons: [], baseMods: o.mods || [], enh: o.enh || 0, hpMul: o.hpMul, atkMul: o.atkMul,
     cd: { B: 0, Q: 0, W: 0, E: 0, R: 0, A: 0 }, active: null, tx: null, ty: null, vx: 0, vy: 0, face: 0, flip: false, alive: true,
     stunT: 0, slowT: 0, slow: 0, invT: 0, hitT: 0, dash: null, moveT: 0, revive: 0, nextCrit: false, bot: !!o.bot };
   u.sk = {};
@@ -995,7 +1012,7 @@ function newRun(opt) {
     if (S.equip.title && TITLES[S.equip.title]) mods.push(TITLES[S.equip.title].m);
   }
   const startLv = opt.mode === "story" ? 1 + (opt.floor - 1) * 8 : opt.mode === "duel" ? 10 : opt.mode === "raid" ? 12 : 1;
-  const p = makeHero(opt.char, { form, lvl: startLv, mods, stars: S.stars[opt.char] || 0, equip: S.skillEquip[opt.char], skillLv: S.skills, x: RW / 2, y: RH / 2 + 120 });
+  const p = makeHero(opt.char, { form, lvl: startLv, mods, enh: (S.enh && S.enh[opt.char]) || 0, equip: S.skillEquip[opt.char], skillLv: S.skills, x: RW / 2, y: RH / 2 + 120 });
   G = { mode: opt.mode, floor: opt.floor || 1, stage: 1, p, units: [p], projs: [], zones: [], tele: [], fx: [], parts: [], texts: [], drops: [], orbs: [], timers: [],
     time: 0, shake: 0, paused: false, over: false, goldRun: 0, rooms: new Map(), cur: null, roomT: 0, stageHit: false, kills: 0, goldGot: 0, coinGot: 0, roomsCleared: 0,
     endlessN: 0, trans: null, banner: null, opt, unlocksAtStart: Object.keys(S.chars).length, levelQueue: 0, bossUnit: null, duel: null, lightT: 0 };
@@ -1655,7 +1672,7 @@ function addSummon(owner, kind, dur, i) {
 }
 function addPet(owner, key, lv) {
   const P = PETS[key];
-  G.units.push({ kind: "pet", team: 0, owner, key, P, lvMul: 1 + 0.2 * (lv - 1), img: P.img, x: owner.x - 50, y: owner.y, r: 18, cd: 1, alive: true, buffs: [], stunT: 0, slowT: 0, slow: 0, kx: 0, ky: 0, flip: false, ph: 0 });
+  G.units.push({ kind: "pet", team: 0, owner, key, P, lvMul: (1 + 0.2 * (lv - 1)) * (PET_RAR_MUL[P.rar] || 1), img: P.img, x: owner.x - 50, y: owner.y, r: 18, cd: 1, alive: true, buffs: [], stunT: 0, slowT: 0, slow: 0, kx: 0, ky: 0, flip: false, ph: 0 });
 }
 
 // ---------- 뽑기 (원정 중) ----------
@@ -2102,7 +2119,7 @@ function stageClear() {
 // 원정 보상 엽전: 처치·방·보스·진행도 + 남은 금화의 절반 (엽전 보너스 아티팩트·칭호 적용)
 function runReward(r) {
   if (r.mode === "duel") return r.win ? (G.mirror ? 4 : 2) : 0;
-  if (r.mode === "raid") return (G.raidN || 0) + (G.raidDone ? 5 : 0); // 보스마다 1개는 이미 받음 + 완주 보너스
+  if (r.mode === "raid") { if (G.raidDone) SAVE.stats.raidClear = (SAVE.stats.raidClear || 0) + 1; return (G.raidN || 0) + (G.raidDone ? 5 : 0); } // 보스마다 1개는 이미 받음 + 완주 보너스
   const prog = r.mode === "story" ? ((r.floor - 1) * STAGES_PER_FLOOR + r.stage) * 20 + (r.storyDone ? 600 : 0) : r.endless * 12;
   const base = r.kills * 2 + r.rooms * 10 + (G.bossKills || 0) * 45 + prog + Math.floor((r.goldRun || 0) / 2);
   return Math.max(r.kills > 0 ? 1 : 0, Math.round(base * (1 + ((G.p.m && G.p.m.gold) || 0) * 0.3) / 250));
@@ -2713,7 +2730,7 @@ const NET = {
     if (S.equip.pet && PETS[S.equip.pet].m) mods.push(scaleMods(PETS[S.equip.pet].m, 1 + 0.2 * ((S.pets[S.equip.pet] || 1) - 1)));
     if (S.equip.title) mods.push(TITLES[S.equip.title].m);
     const eq = S.skillEquip[S.sel] || {}, lv = {}; for (const k of Object.values(eq)) lv[k] = S.skills[k] || 1;
-    return { char: S.sel, stars: S.stars[S.sel] || 0, equip: eq, skillLv: lv, mods, pet: S.equip.pet, petLv: S.pets[S.equip.pet] || 1, title: S.equip.title };
+    return { char: S.sel, enh: (S.enh && S.enh[S.sel]) || 0, equip: eq, skillLv: lv, mods, pet: S.equip.pet, petLv: S.pets[S.equip.pet] || 1, title: S.equip.title };
   },
   onHost(m) {
     if (m.t === "hello") { this.lobby.guest = { name: m.name, load: m.load, ver: m.ver, ready: true }; this.send({ t: "lobby", mode: this.lobby.mode, host: nick(), ver: GAME_VERSION, char: SAVE.sel }); this.lobby.onUpdate && this.lobby.onUpdate(); }
@@ -2750,7 +2767,7 @@ const NET = {
   makeGuestHero(opt, startLv) {
     const L = opt.guest, duel = opt.mode === "duel";
     const form = CHAR[L.char].forms ? pick(Object.keys(CHAR[L.char].forms)) : null;
-    const h = makeHero(L.char, { team: duel ? 1 : 0, form, lvl: startLv, mods: duel ? [] : L.mods, stars: L.stars, equip: L.equip, skillLv: L.skillLv, x: RW / 2 + 70, y: duel ? BT + 170 : RH / 2 + 120 });
+    const h = makeHero(L.char, { team: duel ? 1 : 0, form, lvl: startLv, mods: duel ? [] : L.mods, enh: duel ? 0 : L.enh, equip: L.equip, skillLv: L.skillLv, x: RW / 2 + 70, y: duel ? BT + 170 : RH / 2 + 120 });
     h.remote = true; h.ctrl = this.rin; h.guestName = this.lobby.guest.name;
     this.guestHero = h; G.p2 = h; G.units.push(h);
     if (!duel && L.pet && PETS[L.pet]) addPet(h, L.pet, L.petLv || 1);
@@ -2889,7 +2906,7 @@ const NET = {
 <script>
 // ===== 등불 미궁: 그림자 원정 — 화면·계정·가챠 =====
 "use strict";
-const GAME_VERSION = "1.0.2";
+const GAME_VERSION = "1.0.3";
 // 자동 업데이트: 게임이 올라가 있는 주소 (빌드 때 채움). 더 새 판이 있으면 알려 줌
 const UPDATE_URL = "https://wjdaudrn091600-ai.github.io/lantern-maze/";
 const verNum = (v) => String(v).split(".").reduce((a, x) => a * 1000 + (+x || 0), 0);
@@ -2920,13 +2937,13 @@ const cleanNick = (s) => String(s || "").replace(/[<>"'&]/g, "").trim().slice(0,
 function hashPw(id, pw) { let h = 2166136261; const s = "dbm2|" + id + "|" + pw; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36) + s.length; }
 function accounts() { try { return JSON.parse(ls.get("dbm2_accounts") || "{}"); } catch (e) { return {}; } }
 function freshSave() {
-  return { v: 1, coins: 5, gold: 0, chars: { musa: 1 }, stars: {}, pity: 0, skills: {}, skillEquip: {}, arts: {}, pets: {}, titles: {},
+  return { v: 1, coins: 5, gold: 0, chars: { musa: 1 }, stars: {}, shards: {}, enh: {}, pity: 0, skills: {}, skillEquip: {}, arts: {}, pets: {}, titles: {},
     equip: { arts: [null, null], pet: null, title: null, story: null }, stats: { kills: 0, bosses: 0, rooms: 0, maxLevel: 0, endlessBest: 0, duelWins: 0, pulls: 0 },
     missions: {}, story: { maxFloor: 1, seen: {} }, eggs: {}, daily: { day: "", streak: 0 }, tutorial: false, shop: { day: "", bought: 0 }, sel: "musa", endlessRewarded: 0, settings: { vol: 0.55, sfx: 0.35, music: true } };
 }
 function devSave(s) {
   s.coins = Math.max(s.coins, 9999); s.gold = Math.max(s.gold, 99999);
-  for (const c of CHARS) s.chars[c.id] = 1;
+  for (const c of CHARS) { s.chars[c.id] = 1; s.shards[c.id] = Math.max(s.shards[c.id] || 0, 200); }
   for (const k of SKILL_KEYS) s.skills[k] = Math.max(s.skills[k] || 0, 1);
   for (const k of ART_KEYS) s.arts[k] = Math.max(s.arts[k] || 0, 1);
   for (const k of PET_KEYS) s.pets[k] = Math.max(s.pets[k] || 0, 1);
@@ -2939,6 +2956,7 @@ function loadAccount(id) {
   if (!s) s = base; else { for (const k in base) if (s[k] === undefined) s[k] = base[k]; for (const k in base.stats) if (s.stats[k] === undefined) s.stats[k] = 0; s.settings = Object.assign(base.settings, s.settings || {}); }
   for (const [store, T] of [["arts", ARTIFACTS], ["pets", PETS], ["titles", TITLES]]) for (const k in s[store]) if (!T[k]) delete s[store][k];
   s.equip.arts = (s.equip.arts || [null, null]).map((k) => (k && ARTIFACTS[k] ? k : null)); if (s.equip.pet && !PETS[s.equip.pet]) s.equip.pet = null; if (s.equip.title && !TITLES[s.equip.title]) s.equip.title = null; if (s.equip.story && !ARTIFACTS[s.equip.story]) s.equip.story = null; if (s.equip.story === undefined) s.equip.story = null;
+  s.shards = s.shards || {}; s.enh = s.enh || {}; for (const k in s.stars || {}) { s.enh[k] = Math.max(s.enh[k] || 0, Math.min(SHARD.maxEnh, s.stars[k] * 2)); } s.stars = {};
   if (id === DEV_ID) devSave(s);
   return s;
 }
@@ -2959,14 +2977,17 @@ function login(id, pw, create, nk) {
 function statVal(k) {
   if (k === "charsOwned") return Object.keys(SAVE.chars).length;
   if (k === "allModes") return Object.keys(SAVE.stats.modes || {}).length;
+  if (k === "petsOwned") return Object.keys(SAVE.pets || {}).length;
   return SAVE.stats[k] || 0;
 }
 function unlockProgress(c) {
   const u = c.unlock;
   if (u.type === "start") return { ok: true, cur: 1, n: 1 };
-  if (u.type === "gacha") return { ok: !!SAVE.chars[c.id], cur: 0, n: 1 };
-  if (u.type === "floor") return { ok: (SAVE.story.maxFloor || 1) >= u.n, cur: SAVE.story.maxFloor || 1, n: u.n };
-  return { ok: statVal(u.stat) >= u.n, cur: Math.min(statVal(u.stat), u.n), n: u.n };
+  if (u.type === "gacha") return { ok: !!SAVE.chars[c.id], cur: Math.min((SAVE.shards || {})[c.id] || 0, SHARD.unlockGacha), n: SHARD.unlockGacha };
+  const reqs = (u.reqs || []).slice(); if (u.type === "floor") reqs.unshift({ floor: u.n });
+  let frac = 1, ok = true; const parts = [];
+  for (const r of reqs) { const v = r.floor ? SAVE.story.maxFloor || 1 : statVal(r.stat), n = r.floor || r.n; frac = Math.min(frac, Math.min(v, n) / n); if (v < n) ok = false; parts.push(`${r.floor ? "스토리 " + n + "층" : r.text} ${Math.min(v, n)}/${n}`); }
+  return { ok, cur: Math.round(frac * 100), n: 100, parts };
 }
 function checkUnlocks() {
   if (!SAVE) return;
@@ -2981,7 +3002,18 @@ function rollRar(rates) { let r = Math.random(), acc = 0; for (const k of [4, 3,
 function pullOne(kind, slot, atLeastRare) {
   SAVE.stats.pulls = (SAVE.stats.pulls || 0) + 1;
   if (kind === "char") {
-    SAVE.pity = (SAVE.pity || 0) + 1;
+    // 조각 시스템 (사용자 요청 11-11): 전설 3% → 가챠 영웅 조각 20개 (40개면 해금), 30회 천장. 나머지는 가진 캐릭터 조각 2~5개
+    SAVE.pity = (SAVE.pity || 0) + 1; SAVE.shards = SAVE.shards || {};
+    const heroes = CHARS.filter((c) => c.unlock.type === "gacha");
+    if (Math.random() < SHARD.rate || SAVE.pity >= SHARD.pity) {
+      SAVE.pity = 0; const id = pick(heroes).id; SAVE.shards[id] = (SAVE.shards[id] || 0) + SHARD.hitShards;
+      let isNew = false; if (!SAVE.chars[id] && SAVE.shards[id] >= SHARD.unlockGacha) { SAVE.shards[id] -= SHARD.unlockGacha; SAVE.chars[id] = 1; isNew = true; }
+      return { kind: "char", id, rar: 4, isNew, label: isNew ? `${CHAR[id].name} 해금!` : `${CHAR[id].name} 조각 +${SHARD.hitShards} (${SAVE.chars[id] ? "강화용" : SAVE.shards[id] + "/" + SHARD.unlockGacha})` };
+    }
+    const pool = Object.keys(SAVE.chars), id = pick(pool), n = rint(2, 5); SAVE.shards[id] = (SAVE.shards[id] || 0) + n;
+    return { kind: "shard", id, rar: 1, label: `${CHAR[id].name} 조각 +${n}` };
+  }
+  if (kind === "char_old") {
     if (Math.random() < GACHA.char.rate || SAVE.pity >= GACHA.char.pity) {
       SAVE.pity = 0; const id = pick(CHARS.filter((c) => c.unlock.type === "gacha")).id;
       if (SAVE.chars[id]) { SAVE.stars[id] = Math.min(5, (SAVE.stars[id] || 0) + 1); return { kind: "char", id, rar: 4, dup: true, label: `${CHAR[id].name} ★${SAVE.stars[id]}` }; }
@@ -3109,7 +3141,7 @@ const UI = {
     const grid = CHARS.map((c) => {
       const own = !!SAVE.chars[c.id], art = charArt(c.id, c.forms ? "wolf" : null);
       return `<button class="ch ${own ? "" : "lock"} ${c.id === sel ? "on" : ""}" data-c="${c.id}" style="background-image:url(${imgSrc("card_" + art)})">
-        <span class="tag">${UNLOCK_TYPE[c.unlock.type]}</span>${own ? "" : '<span class="lk">🔒</span>'}<span class="nm">${c.name}<small>${c.job}${SAVE.stars[c.id] ? " ★" + SAVE.stars[c.id] : ""}</small></span></button>`;
+        <span class="tag"><b style="color:${GRADE_INFO[CHAR_GRADE[c.id]].col}">${CHAR_GRADE[c.id]}</b> ${UNLOCK_TYPE[c.unlock.type]}</span>${own ? "" : '<span class="lk">🔒</span>'}<span class="nm">${c.name}<small>${c.job}${(SAVE.enh || {})[c.id] ? " +" + SAVE.enh[c.id] : ""}</small></span></button>`;
     }).join("");
     UI.frame(title, `<div class="charwrap"><div class="chars">${grid}</div><div class="detail card" id="cdet"></div></div>`, () => UI.menu());
     const show = (id) => {
@@ -3120,8 +3152,8 @@ const UI = {
       const def = charDef(id, f0), art = charArt(id, f0), eq = SAVE.skillEquip[id] || {};
       const skills = ["Q", "W", "E", "R"].map((s, i) => { const k = eq[s], sd = k && SKILLS[k] ? SKILLS[k] : c.sk[i];
         return `<div class="skl"><span class="k">${abIc(k ? "gs_" + k : "sk_" + id + "_" + i, sd.ic, 30)}<small>${{ Q: "1", W: "2", E: "3", R: "4" }[s]}</small></span><div><b>${sd.name}</b> ${k ? `<span class="grade" style="background:${SK_GRADE[sd.grade].col}">${sd.grade}</span>` : '<span class="muted">기본</span>'} <span class="muted">· ${sd.cd}초</span><div class="muted">${sd.desc}</div></div></div>`; }).join("");
-      const lockInfo = own ? "" : c.unlock.type === "gacha" ? `<p>🎰 <b>가챠 전용 영웅</b> — 가챠 화면의 캐릭터 뽑기에서 얻어요</p>`
-        : `<p>🔒 <b>${UNLOCK_TYPE[c.unlock.type]}</b>: ${c.unlock.text}</p><div class="prog"><i style="width:${(up.cur / up.n) * 100}%"></i></div><p class="muted">${up.cur} / ${up.n}</p>`;
+      const lockInfo = own ? "" : c.unlock.type === "gacha" ? `<p>🎰 <b>가챠 전용 S급 영웅</b> — 캐릭터 뽑기로 조각 ${SHARD.unlockGacha}개를 모으면 해금 (지금 ${(SAVE.shards || {})[id] || 0}개)</p><div class="prog"><i style="width:${Math.min(100, ((SAVE.shards || {})[id] || 0) / SHARD.unlockGacha * 100)}%"></i></div>`
+        : `<p>🔒 <b>${UNLOCK_TYPE[c.unlock.type]}</b>: ${c.unlock.text}</p><div class="prog"><i style="width:${(up.cur / up.n) * 100}%"></i></div><p class="muted">${(up.parts || [up.cur + " / " + up.n]).join(" · ")}</p>`;
       let start = "";
       if (mode && own) {
         if (mode === "story") start = `<p>시작 층: <span id="fsel">${FLOORS.map((f, i) => `<button class="btn sm ${i === 0 ? "gold" : ""}" data-f="${i + 1}" ${i + 1 > SAVE.story.maxFloor ? "disabled" : ""}>${i + 1}층</button>`).join(" ")}</span></p>`;
@@ -3129,9 +3161,10 @@ const UI = {
         start += `<button class="btn gold" id="go" style="width:100%;font-size:1.3rem">이 캐릭터로 출발 ▶</button>`;
       }
       $("#cdet").innerHTML = `<div class="big anim-card">${animCard(art, true)}</div>
-        <h3 style="margin-top:10px">${c.name} · ${c.job} ${SAVE.stars[id] ? `<span class="stars">${"★".repeat(SAVE.stars[id])}</span>` : ""}</h3>
+        <h3 style="margin-top:10px">${c.name} · ${c.job} ${(SAVE.enh || {})[id] ? `<span class="stars">+${SAVE.enh[id]}</span>` : ""}</h3>
         ${c.forms ? `<p class="muted">🎲 출발할 때마다 <b>늑대인간(남)</b> 또는 <b>구미호(여)</b> 모습이 랜덤으로 정해져요. 늑대인간은 근접 발톱, 구미호는 여우 구슬(원거리)</p>` : ""}
-        <p class="muted">체력 ${def.hp} · 공격 ${def.atk} · 이동 ${def.spd} · ${def.range}</p>
+        <p><span class="grade" style="background:${GRADE_INFO[CHAR_GRADE[id]].col}">${CHAR_GRADE[id]}급</span> <span class="muted">체력 ${Math.round(def.hp * GRADE_INFO[CHAR_GRADE[id]].mul * (1 + 0.05 * ((SAVE.enh || {})[id] || 0)))} · 공격 ${Math.round(def.atk * GRADE_INFO[CHAR_GRADE[id]].mul * (1 + 0.05 * ((SAVE.enh || {})[id] || 0)))} · 이동 ${def.spd} · ${def.range} · 사거리 ${CHAR_RANGE[art] || CHAR_RANGE[id] || "-"}</span></p>
+        ${own ? `<div class="card" style="padding:8px;margin:6px 0;display:flex;gap:10px;align-items:center"><b style="font-family:var(--display);font-size:1.2rem;color:var(--gold2)">강화 +${(SAVE.enh || {})[id] || 0}</b><span class="muted" style="flex:1">조각 ${(SAVE.shards || {})[id] || 0}${((SAVE.enh || {})[id] || 0) < SHARD.maxEnh ? " / 다음 강화 " + SHARD.enhCost((SAVE.enh || {})[id] || 0) : " · 최대"} · 단계마다 공격·체력 +5%</span><button class="btn sm gold" id="enhbtn" ${((SAVE.shards || {})[id] || 0) >= SHARD.enhCost((SAVE.enh || {})[id] || 0) && ((SAVE.enh || {})[id] || 0) < SHARD.maxEnh ? "" : "disabled"}>강화</button></div>` : ""}
         <div class="skl"><span class="k">${abIc("sk_" + id + "_b", "🖱️", 30)}<small>좌클릭</small></span><div><b>${def.basic.name}</b> <span class="muted">기본 공격 · ${def.basic.cd}초</span></div></div>
         ${skills}${lockInfo}<div style="margin-top:12px">${start}</div>
         ${own ? `<button class="btn sm" id="toSk" style="margin-top:8px">📜 이 캐릭터 스킬 바꾸기</button>` : ""}`;
@@ -3140,6 +3173,7 @@ const UI = {
       document.querySelectorAll("#dsel button").forEach((b) => (b.onclick = () => { diff = b.dataset.d; document.querySelectorAll("#dsel button").forEach((x) => x.classList.toggle("gold", x === b)); }));
       if ($("#go")) $("#go").onclick = () => { SAVE.sel = id; saveGame(); UI.startRun({ mode, char: id, floor, diff }); };
       if ($("#toSk")) $("#toSk").onclick = () => UI.skills({ char: id });
+      if ($("#enhbtn")) $("#enhbtn").onclick = () => { SAVE.enh = SAVE.enh || {}; const lv = SAVE.enh[id] || 0, cost = SHARD.enhCost(lv); if ((SAVE.shards[id] || 0) < cost || lv >= SHARD.maxEnh) return; SAVE.shards[id] -= cost; SAVE.enh[id] = lv + 1; saveGame(); UI.toast(`⬆️ ${CHAR[id].name} 강화 +${lv + 1}`); show(id); };
       if (own) { SAVE.sel = id; saveGame(); }
     };
     document.querySelectorAll(".ch").forEach((b) => (b.onclick = () => show(b.dataset.c)));
@@ -3181,9 +3215,9 @@ const UI = {
     const pctRow = (rates) => Object.entries(rates).sort((a, b) => b[0] - a[0]).map(([r, p]) => `<span class="pill" style="border-color:${RARITY[r].col}"><b style="color:${RARITY[r].col}">${RARITY[r].name}</b> ${(p * 100).toFixed(1)}%</span>`).join("");
     if (tab === "char") {
       const heroes = CHARS.filter((c) => c.unlock.type === "gacha");
-      body = `<div class="banner"><h3>🧑 캐릭터 뽑기 — 가챠 전용 전설 영웅</h3><p class="muted">${GACHA.char.desc}</p>
-        <div class="chars" style="grid-template-columns:repeat(4,minmax(0,140px))">${heroes.map((c) => `<div class="ch anim-card ${SAVE.chars[c.id] ? "" : "lock"}">${animCard(c.id)}<span class="nm" style="z-index:2">${c.name}<small>${c.job}${SAVE.stars[c.id] ? " ★" + SAVE.stars[c.id] : ""}</small></span></div>`).join("")}</div>
-        <div class="rates"><span class="pill" style="border-color:var(--gold)"><b>전설 영웅</b> ${(GACHA.char.rate * 100).toFixed(0)}%</span><span class="pill">나머지: 엽전·코인</span><span class="pill">천장 ${GACHA.char.pity}회 · 지금 <b>${SAVE.pity || 0}</b>회째</span></div>
+      body = `<div class="banner"><h3>🧑 캐릭터 뽑기 — 가챠 전용 전설 영웅</h3><p class="muted">${"가챠 전용 S급 영웅. 조각 40개를 모으면 해금, 이후 조각은 강화에 써요."}</p>
+        <div class="chars" style="grid-template-columns:repeat(4,minmax(0,140px))">${heroes.map((c) => `<div class="ch anim-card ${SAVE.chars[c.id] ? "" : "lock"}">${animCard(c.id)}<span class="nm" style="z-index:2">${c.name}<small>${c.job} · ${SAVE.chars[c.id] ? "보유" : "조각 " + ((SAVE.shards || {})[c.id] || 0) + "/" + SHARD.unlockGacha}</small></span></div>`).join("")}</div>
+        <div class="rates"><span class="pill" style="border-color:var(--gold)"><b>영웅 조각 ${SHARD.hitShards}개</b> ${(SHARD.rate * 100).toFixed(0)}%</span><span class="pill">나머지: 가진 캐릭터 조각 2~5개 (강화용)</span><span class="pill">천장 ${SHARD.pity}회 · 지금 <b>${SAVE.pity || 0}</b>회째</span><span class="pill">영웅 해금: 조각 ${SHARD.unlockGacha}개</span></div>
         <div class="row"><button class="btn gold" data-p="1">1회 · ${curIc("coin")}${GACHA.char.cost}</button><button class="btn gold" data-p="10">10회 · ${curIc("coin")}${GACHA.char.cost10}</button></div></div>`;
     } else if (tab === "skill") {
       const st = ["Q", "W", "E", "R"].map((s) => `<button class="tab ${s === slot ? "on" : ""}" data-sl="${s}">${{ Q: "1", W: "2", E: "3", R: "4" }[s]}번 칸${s === "R" ? " (궁극기)" : ""}</button>`).join("");
@@ -3210,6 +3244,7 @@ const UI = {
       let col, inner, bg = "";
       if (r.kind === "char") { col = RARITY[4].col; inner = animCard(r.id) + `<span class="t" style="margin-top:auto">${r.label}</span>`; return `<div class="rv anim-card legend" style="border-color:${col};animation-delay:${i * 0.12}s">${r.isNew ? '<span class="new">NEW</span>' : ""}${inner}</div>`; }
       else if (r.kind === "skill") { const s = SKILLS[r.id]; col = SK_GRADE[r.grade].col; inner = `<span class="ico">${abIc("gs_" + r.id, s.ic, 64)}</span><span class="grade" style="background:${col}">${r.grade}</span><span class="t">${r.label}</span><span class="muted" style="font-size:0.7rem">${{ Q: "1", W: "2", E: "3", R: "4" }[s.slot]}번 칸${s.owner ? " · " + CHAR[s.owner].name : ""}</span>`; }
+      else if (r.kind === "shard") { col = "#9fb0c8"; inner = `<img src="${imgSrc("spr_" + charArt(r.id, CHAR[r.id].forms ? "wolf" : null))}" alt="" style="width:60%"><span class="t">${r.label}</span>`; }
       else if (r.kind === "misc") { col = RARITY[r.rar].col; inner = `<span class="ico">${r.ico}</span><span class="t">${r.label}</span>`; }
       else { col = RARITY[r.rar].col; const def = { art: ARTIFACTS, pet: PETS, title: TITLES }[r.kind][r.id]; inner = (def.img ? `<img src="${imgSrc(def.img)}" alt="">` : `<span class="ico">🏷️</span>`) + `<span class="t" style="color:${col}">${r.label}</span>`; }
       return `<div class="rv" style="border-color:${col};box-shadow:0 0 18px ${col}66;animation-delay:${i * 0.12}s;${bg}">${r.isNew ? '<span class="new">NEW</span>' : ""}${inner}</div>`;
@@ -3244,7 +3279,7 @@ const UI = {
       return `<div class="card" style="display:flex;gap:12px;align-items:center;${got ? "opacity:.5" : ""}"><div style="flex:1"><b>${m.name}</b><div class="prog"><i style="width:${(v / m.n) * 100}%"></i></div><span class="muted">${v} / ${m.n}</span></div>
         <button class="btn ${done && !got ? "gold" : ""} sm" data-m="${m.id}" ${done && !got ? "" : "disabled"}>${got ? "받음" : `🪙 ${m.coin}`}</button></div>`; }).join("");
     const cu = CHARS.filter((c) => c.unlock.type !== "start" && c.unlock.type !== "gacha").map((c) => { const u = unlockProgress(c);
-      return `<div class="card" style="display:flex;gap:10px;align-items:center"><img src="${imgSrc("spr_" + charArt(c.id, "wolf"))}" style="width:48px;height:48px;object-fit:contain;${SAVE.chars[c.id] ? "" : "filter:brightness(.35)"}" alt=""><div style="flex:1"><b>${c.name} · ${c.job}</b> <span class="muted">${UNLOCK_TYPE[c.unlock.type]}</span><div class="muted">${c.unlock.text}</div><div class="prog"><i style="width:${(u.cur / u.n) * 100}%"></i></div></div>${SAVE.chars[c.id] ? "✅" : "🔒"}</div>`; }).join("");
+      return `<div class="card" style="display:flex;gap:10px;align-items:center"><img src="${imgSrc("spr_" + charArt(c.id, "wolf"))}" style="width:48px;height:48px;object-fit:contain;${SAVE.chars[c.id] ? "" : "filter:brightness(.35)"}" alt=""><div style="flex:1"><b>${c.name} · ${c.job}</b> <span class="muted">${UNLOCK_TYPE[c.unlock.type]}</span><div class="muted">${c.unlock.text}</div><div class="prog"><i style="width:${(u.cur / u.n) * 100}%"></i></div><div class="muted" style="font-size:.75rem">${(u.parts || []).join(" · ")}</div></div>${SAVE.chars[c.id] ? "✅" : "🔒"}</div>`; }).join("");
     UI.frame("미션", `<div class="charwrap" style="grid-template-columns:1fr 1fr"><div><h3>코인 미션</h3><div style="display:flex;flex-direction:column;gap:8px">${rows}</div></div><div><h3>캐릭터 해금</h3><div style="display:flex;flex-direction:column;gap:8px">${cu}</div></div></div>`);
     document.querySelectorAll("[data-m]").forEach((b) => (b.onclick = () => { const m = MISSIONS.find((x) => x.id === b.dataset.m); SAVE.missions[m.id] = 1; SAVE.coins += m.coin; saveGame(); UI.toast(`🪙 코인 +${m.coin}`); UI.missions(); }));
   },
